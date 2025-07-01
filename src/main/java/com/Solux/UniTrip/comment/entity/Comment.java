@@ -1,0 +1,49 @@
+package com.Solux.UniTrip.comment.entity;
+//Comment 엔티티
+//백다현
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "comments")
+@Getter
+@NoArgsConstructor
+public class Comment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long commentId;
+
+    private Long postId;
+
+    private Long userId;  // 로그인 개발되면 이 부분 연동
+
+    private LocalDateTime createdAt;
+
+    @Lob
+    private String content;
+
+    private int likes = 0;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+
+    public Comment(Long postId, Long userId, String content) {
+        this.postId = postId;
+        this.userId = userId;
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+        this.likes = 0;
+    }
+
+    //댓글 수정 메소드
+    public void updateContent(String content) {
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
+    }
+}
