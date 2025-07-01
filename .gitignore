@@ -1,11 +1,24 @@
+# === 기본 무시 파일 ===
 HELP.md
-.gradle
+.gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
+out/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-### STS ###
+# === IDE 설정 ===
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# STS (Spring Tool Suite)
 .apt_generated
 .classpath
 .factorypath
@@ -13,25 +26,29 @@ build/
 .settings
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+# VSCode
+.vscode/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
+# === OS 관련 ===
+.DS_Store
+Thumbs.db
+
+# === Gradle Wrapper ===
+!gradle/wrapper/gradle-wrapper.jar
+
+# === 설정 파일 예외 처리 ===
+# 실제 환경설정 파일은 Git에 올리지 않기
+src/main/resources/application.properties
+src/main/resources/application.yml
+
+# === 로그 파일, 임시파일 무시 ===
+*.log
+*.tmp
