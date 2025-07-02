@@ -8,6 +8,7 @@ import com.Solux.UniTrip.comment.dto.CommentUpdateRequestDto;
 import com.Solux.UniTrip.comment.dto.CommentUpdateResponseDto;
 import com.Solux.UniTrip.comment.service.CommentService;
 import com.Solux.UniTrip.common.dto.ApiSuccessResponse;
+import com.Solux.UniTrip.common.dto.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,22 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseEntity.ok(
                 new ApiSuccessResponse<>(200, "댓글이 성공적으로 삭제되었습니다.", null)
+        );
+    }
+
+    // 댓글 목록 조회 API
+    @GetMapping
+    public ResponseEntity<ApiSuccessResponse<PageResponseDto>> getComments(
+            // TODO: postId를 주입받으려면 아래 주석 해제
+            //@RequestParam Long postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Long postId = 1L; // 임시값
+        PageResponseDto response = commentService.getComments(postId, page, size);
+
+        return ResponseEntity.ok(
+                new ApiSuccessResponse<>(200, "댓글 목록 조회에 성공하였습니다.", response)
         );
     }
 }
