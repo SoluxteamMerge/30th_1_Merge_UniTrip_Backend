@@ -19,10 +19,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public CommentResponseDto createComment(CommentCreateRequestDto dto) {
-        if (dto.getPostId() == null || dto.getContent() == null || dto.getContent().trim().isEmpty())
-        {
+        if (dto == null || dto.getPostId() == null || dto.getContent() == null ||
+                dto.getContent().trim().isEmpty()) {
             throw new BadRequestException("요청 값이 올바르지 않습니다.");
         }
+
 
         // 실제로는 Post 존재 여부를 확인해야 함 (PostRepository.findById)
         boolean postExists = true; // TODO: Post 존재 체크
@@ -50,9 +51,10 @@ public class CommentService {
     // 댓글 수정
     @Transactional
     public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto dto) {
-        if (dto.getContent() == null || dto.getContent().trim().isEmpty()) {
+        if (dto == null || dto.getContent() == null || dto.getContent().trim().isEmpty()) {
             throw new BadRequestException("요청 값이 올바르지 않습니다.");
         }
+
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("해당 댓글을 찾을 수 없습니다."));

@@ -43,7 +43,11 @@ public class Comment {
 
     //댓글 수정 메소드
     public void updateContent(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("수정할 내용이 비어있습니다.");
+        }
         this.content = content;
         this.updatedAt = LocalDateTime.now();
     }
+
 }
