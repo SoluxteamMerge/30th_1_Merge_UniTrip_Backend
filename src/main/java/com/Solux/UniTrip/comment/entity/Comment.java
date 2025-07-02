@@ -41,7 +41,7 @@ public class Comment {
     public Comment(Long postId, Long userId, String content) {
         this.postId = postId;
         this.userId = userId;
-        this.content = content;
+        this.content = content != null ? content : "";
         this.createdAt = LocalDateTime.now();
         this.likeCount = 0;
     }
