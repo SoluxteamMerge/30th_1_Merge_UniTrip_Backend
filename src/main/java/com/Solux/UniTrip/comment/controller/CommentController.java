@@ -2,10 +2,7 @@ package com.Solux.UniTrip.comment.controller;
 //댓글 controller
 //백다현
 
-import com.Solux.UniTrip.comment.dto.CommentCreateRequestDto;
-import com.Solux.UniTrip.comment.dto.CommentResponseDto;
-import com.Solux.UniTrip.comment.dto.CommentUpdateRequestDto;
-import com.Solux.UniTrip.comment.dto.CommentUpdateResponseDto;
+import com.Solux.UniTrip.comment.dto.*;
 import com.Solux.UniTrip.comment.service.CommentService;
 import com.Solux.UniTrip.common.dto.ApiSuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -53,4 +50,21 @@ public class CommentController {
                 new ApiSuccessResponse<>(200, "댓글이 성공적으로 삭제되었습니다.", null)
         );
     }
+
+    //댓글 좋아요 등록/삭제 API
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<ApiSuccessResponse<CommentLikeResponseDto>> toggleLike(
+            @PathVariable Long commentId
+    ) {
+        CommentLikeResponseDto response = commentService.toggleLike(commentId);
+
+        String message = response.isLiked()
+                ? "댓글에 좋아요를 등록하였습니다."
+                : "댓글에 좋아요를 취소하였습니다.";
+
+        return ResponseEntity.ok(
+                new ApiSuccessResponse<>(200, message, response)
+        );
+    }
+
 }

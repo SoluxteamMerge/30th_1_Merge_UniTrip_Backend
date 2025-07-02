@@ -6,28 +6,37 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "`Comments`")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long commentId;
 
+    @Column(name = "post_id")
     private Long postId;
 
+    @Column(name = "user_id")
     private Long userId;  // 로그인 개발되면 이 부분 연동
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Lob
+    @Column(name = "content")
     private String content;
 
-    private int likes = 0;
+    @Column(name = "like_count")
+    private int likeCount = 0;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -38,7 +47,7 @@ public class Comment {
         this.userId = userId;
         this.content = content;
         this.createdAt = LocalDateTime.now();
-        this.likes = 0;
+        this.likeCount = 0;
     }
 
     //댓글 수정 메소드

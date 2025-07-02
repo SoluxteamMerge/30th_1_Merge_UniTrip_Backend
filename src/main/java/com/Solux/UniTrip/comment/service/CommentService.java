@@ -1,10 +1,9 @@
 package com.Solux.UniTrip.comment.service;
 
-import com.Solux.UniTrip.comment.dto.CommentCreateRequestDto;
-import com.Solux.UniTrip.comment.dto.CommentResponseDto;
-import com.Solux.UniTrip.comment.dto.CommentUpdateRequestDto;
-import com.Solux.UniTrip.comment.dto.CommentUpdateResponseDto;
+import com.Solux.UniTrip.comment.dto.*;
 import com.Solux.UniTrip.comment.entity.Comment;
+import com.Solux.UniTrip.comment.entity.CommentLike;
+import com.Solux.UniTrip.comment.repository.CommentLikeRepository;
 import com.Solux.UniTrip.comment.repository.CommentRepository;
 import com.Solux.UniTrip.common.exception.NotFoundException;
 import com.Solux.UniTrip.common.exception.BadRequestException;
@@ -12,11 +11,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public CommentResponseDto createComment(CommentCreateRequestDto dto) {
         if (dto == null || dto.getPostId() == null || dto.getContent() == null ||
@@ -79,4 +81,42 @@ public class CommentService {
         // (추후) 현재 유저와 작성자 비교해서 권한 체크 필요
         commentRepository.delete(comment);
     }
+
+    //댓글 좋아요
+    @Transactional
+    public CommentLikeResponseDto toggleLike(Long commentId) {
+        // 실제로는 현재 로그인 유저 ID를 가져와야 합니다.
+        // 예) Long userId = SecurityContextHolder.getContext() ...
+        Long userId = 1L; // TODO: 인증 구현 후 현재 사용자 ID로 대체
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("해당 댓글을 찾을 수 없습니다."));
+
+        Optional<CommentLike> existingLike = commentLikeRepository.findByCommentIdAndUserId(commentId, userId);
+
+        boolean isLiked;
+        if (existingLike.isPresent()) {
+            // 좋아요 취소
+            commentLikeRepository.delete(existingLike.get());
+            //좋아요 취소 시 카운트를 내림
+            comment.setLikeCount(comment.getLikeCount() - 1);
+            isLiked = false;
+        }
+
+        else {
+            // 좋아요 등록
+            CommentLike like = new CommentLike(commentId, userId);
+            commentLikeRepository.save(like);
+            //좋아요 등록 시 카운트 올림
+            comment.setLikeCount(comment.getLikeCount() + 1);
+            isLiked = true;
+        }
+
+        return CommentLikeResponseDto.builder()
+                .commentId(commentId)
+                .isLiked(isLiked)
+                .likeCount(comment.getLikeCount())
+                .build();
+    }
+
 }
