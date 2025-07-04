@@ -4,7 +4,7 @@ import com.Solux.UniTrip.comment.dto.CommentCreateRequestDto;
 import com.Solux.UniTrip.comment.dto.CommentResponseDto;
 import com.Solux.UniTrip.comment.dto.CommentUpdateRequestDto;
 import com.Solux.UniTrip.comment.dto.CommentUpdateResponseDto;
-import com.Solux.UniTrip.Entity.Comment;
+import com.Solux.UniTrip.entity.Comment;
 import com.Solux.UniTrip.comment.repository.CommentRepository;
 import com.Solux.UniTrip.common.dto.PageResponseDto;
 import com.Solux.UniTrip.common.exception.NotFoundException;

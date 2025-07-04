@@ -1,9 +1,8 @@
-package com.Solux.UniTrip.Entity;
+package com.Solux.UniTrip.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "Board")

@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.Entity;
+package com.Solux.UniTrip.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +20,7 @@ public class KeywordRanking {
     @Column(name = "keyword", nullable = false, length = 100)
     private String keyword;
 
-    @Column(name = "rank", nullable = false)
+    @Column(name = "`rank`", nullable = false)
     private int rank;
 
     @Column(name = "calculated_at", nullable = false)

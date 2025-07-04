@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.Entity;
+package com.Solux.UniTrip.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

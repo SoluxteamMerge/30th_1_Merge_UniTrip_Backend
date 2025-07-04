@@ -2,7 +2,7 @@ package com.Solux.UniTrip.comment.dto;
 //댓글 response DTO
 //백다현
 
-import com.Solux.UniTrip.Entity.Comment;
+import com.Solux.UniTrip.entity.Comment;
 import lombok.Builder;
 import lombok.Getter;
 

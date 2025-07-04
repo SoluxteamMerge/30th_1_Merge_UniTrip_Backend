@@ -1,9 +1,8 @@
-package com.Solux.UniTrip.Entity;
+package com.Solux.UniTrip.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -48,5 +47,11 @@ public class User {
         ORGANIZATION
     }
 
+    public void update(String name, String email, String nickname, UserType userType) {
+        this.name = name;
+        this.email = email;
+        this.nickname = nickname;
+        this.userType = userType;
+    }
 
 }

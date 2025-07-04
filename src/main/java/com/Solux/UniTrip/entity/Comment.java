@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.Entity;
+package com.Solux.UniTrip.entity;
 //Comment 엔티티
 //백다현
 
