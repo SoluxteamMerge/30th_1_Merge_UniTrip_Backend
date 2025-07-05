@@ -1,0 +1,57 @@
+package com.Solux.UniTrip.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
+
+    @Column(nullable = false, length = 100)
+    private String email;
+
+    @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column(nullable = false, length = 50)
+    private String nickname;
+
+    @Column(length = 20)
+    private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserType userType;
+
+    @Column(nullable = false)
+    private boolean emailVerified;
+
+    @Column
+    private LocalDateTime createdAt;
+
+    @Column(length = 255)
+    private String profileImageUrl;
+
+    public enum UserType {
+        PERSONAL,
+        ORGANIZATION
+    }
+
+    public void update(String name, String email, String nickname, UserType userType) {
+        this.name = name;
+        this.email = email;
+        this.nickname = nickname;
+        this.userType = userType;
+    }
+
+}
