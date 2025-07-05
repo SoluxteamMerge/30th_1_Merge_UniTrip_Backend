@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Image")
+@Table(name = "image")
 @Getter
 @Setter
 @NoArgsConstructor

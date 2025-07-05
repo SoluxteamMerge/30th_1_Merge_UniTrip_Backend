@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "BoardPlaceMapping")
+@Table(name = "board_place_mapping")
 @Getter
 @Setter
 @NoArgsConstructor

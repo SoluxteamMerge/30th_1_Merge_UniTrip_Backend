@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "RouletteTopic")
+@Table(name = "roulette_topic")
 @Getter
 @Setter
 @NoArgsConstructor
