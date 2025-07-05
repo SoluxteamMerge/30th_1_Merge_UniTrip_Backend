@@ -27,6 +27,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String token = jwtTokenProvider.createToken(email);
 
         // 토큰을 쿠키, 헤더, 혹은 리다이렉션 URL 파라미터로 전달
-        response.sendRedirect("http://localhost:3000/oauth2/success?token=" + token);
+        response.sendRedirect("http://localhost:8080/oauth2/success?token=" + token);
     }
 }

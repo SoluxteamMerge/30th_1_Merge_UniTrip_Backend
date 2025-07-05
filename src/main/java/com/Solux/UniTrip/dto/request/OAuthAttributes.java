@@ -24,7 +24,6 @@ public class OAuthAttributes {
         this.userType = userType;
     }
 
-    // 정적 팩토리 메서드 - 구글 같은 프로바이더별로 커스터마이징 가능
     public static OAuthAttributes of(Map<String, Object> attributes) {
         String name = (String) attributes.get("name");
         String email = (String) attributes.get("email");

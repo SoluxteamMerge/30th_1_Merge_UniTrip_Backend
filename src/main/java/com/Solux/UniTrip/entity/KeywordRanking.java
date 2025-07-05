@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "KeywordRanking")
+@Table(name = "keyword_ranking")
 @Getter
 @Setter
 @NoArgsConstructor
