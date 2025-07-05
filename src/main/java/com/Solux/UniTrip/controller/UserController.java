@@ -9,10 +9,10 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/google")
 public class UserController {
 
-    @GetMapping("/me")
+    @GetMapping("/login")
     public Map<String, Object> getCurrentUser(@AuthenticationPrincipal OAuth2User oAuth2User) {
         if (oAuth2User == null) {
             return Map.of("message", "User not authenticated");
