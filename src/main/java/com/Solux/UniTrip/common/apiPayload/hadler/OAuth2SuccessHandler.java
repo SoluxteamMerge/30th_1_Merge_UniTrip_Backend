@@ -1,6 +1,6 @@
-package com.Solux.UniTrip.common.hadler;
+package com.Solux.UniTrip.common.apiPayload.hadler;
 
-import com.Solux.UniTrip.common.JwtTokenProvider;
+import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

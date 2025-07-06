@@ -1,7 +1,7 @@
-package com.Solux.UniTrip.config;
+package com.Solux.UniTrip.common.config;
 
 import com.Solux.UniTrip.service.CustomOAuth2UserService;
-import com.Solux.UniTrip.common.hadler.OAuth2SuccessHandler;
+import com.Solux.UniTrip.common.apiPayload.hadler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
