@@ -20,7 +20,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/comments/**", "/", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/api/comments/**", "/", "/css/**", "/js/**", "/images/**",
+                                "/api/place/search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
