@@ -12,7 +12,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+<<<<<<< Updated upstream
                         .requestMatchers("/api/comments/**").permitAll()
+=======
+                        .requestMatchers( "/", "/css/**", "/js/**", "/images/**",
+                                "/api/place/search").permitAll()
+
+                        .requestMatchers("/api/comments/**").authenticated()
+
+>>>>>>> Stashed changes
                         .anyRequest().authenticated()
                 );
         return http.build();
