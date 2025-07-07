@@ -26,20 +26,20 @@ public class User {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(length = 20)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "user_type", nullable = false)
     private UserType userType;
 
-    @Column(nullable = false)
-    private boolean emailVerified;
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified=false;
 
-    @Column
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(length = 255)
+    @Column(name = "profile_image_url")
     private String profileImageUrl;
 
     public enum UserType {
