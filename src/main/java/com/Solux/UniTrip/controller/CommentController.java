@@ -91,7 +91,9 @@ public class CommentController {
 
             // 공통 로직
             private Long getUserIdFromHeader(String authorizationHeader) {
-                String token = authorizationHeader.substring(7);
+                String token = authorizationHeader.startsWith("Bearer ")
+                        ? authorizationHeader.substring(7).trim()
+                        : authorizationHeader.trim();
                 String email = jwtTokenProvider.getEmailFromToken(token);
                 return userRepository.findByEmail(email)
                         .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND))
