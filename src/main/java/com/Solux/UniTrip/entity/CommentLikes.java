@@ -1,34 +1,37 @@
 package com.Solux.UniTrip.entity;
+//댓글 좋아요 엔티티
+//백다현
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comment_likes")
+@Table(name = "`CommentLikes`")
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class CommentLikes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "like_id")
     private Long likeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
-    private Comment comment;
+    @Column(name = "comment_id")
+    private Long commentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "liked_at")
     private LocalDateTime likedAt;
 
-    @Column(nullable = false)
-    private boolean status;
-}
 
+    public CommentLikes(Long commentId, Long userId) {
+        this.commentId = commentId;
+        this.userId = userId;
+        this.likedAt = LocalDateTime.now();
+    }
+}

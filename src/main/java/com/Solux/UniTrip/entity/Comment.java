@@ -6,11 +6,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "`Comments`")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Comment {
 
