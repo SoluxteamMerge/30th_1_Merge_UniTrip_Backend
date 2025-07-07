@@ -20,10 +20,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/api/place/search").permitAll()
-                        .requestMatchers("/api/comments/**").authenticated()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/api/place/search","/api/schedules/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                        .anyRequest().authenticated()
+
+                        .requestMatchers("/api/comments/**").authenticated()
+
+
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler)
