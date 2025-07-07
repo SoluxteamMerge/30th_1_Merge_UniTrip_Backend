@@ -1,10 +1,10 @@
-package com.Solux.UniTrip.comment.service;
+package com.Solux.UniTrip.service;
 
-import com.Solux.UniTrip.comment.dto.*;
-import com.Solux.UniTrip.comment.entity.Comment;
-import com.Solux.UniTrip.comment.entity.CommentLike;
-import com.Solux.UniTrip.comment.repository.CommentLikeRepository;
-import com.Solux.UniTrip.comment.repository.CommentRepository;
+import com.Solux.UniTrip.dto.*;
+import com.Solux.UniTrip.entity.Comment;
+import com.Solux.UniTrip.entity.CommentLike;
+import com.Solux.UniTrip.repository.CommentLikeRepository;
+import com.Solux.UniTrip.repository.CommentRepository;
 import com.Solux.UniTrip.common.exception.NotFoundException;
 import com.Solux.UniTrip.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;

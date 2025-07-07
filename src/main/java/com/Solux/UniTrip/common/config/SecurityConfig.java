@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.config;
+package com.Solux.UniTrip.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

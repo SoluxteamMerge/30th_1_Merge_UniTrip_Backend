@@ -1,10 +1,9 @@
-package com.Solux.UniTrip.comment.controller;
-//댓글 controller
-//백다현
+package com.Solux.UniTrip.controller;
 
-import com.Solux.UniTrip.comment.dto.*;
-import com.Solux.UniTrip.comment.service.CommentService;
-import com.Solux.UniTrip.common.dto.ApiSuccessResponse;
+import com.Solux.UniTrip.dto.*;
+import com.Solux.UniTrip.service.CommentService;
+import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,54 +15,54 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    //댓글 생성 API
+    // 댓글 생성 API
     @PostMapping
-    public ResponseEntity<?> createComment(
+    public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
             @RequestBody CommentCreateRequestDto request
     ) {
         CommentResponseDto responseDto = commentService.createComment(request);
         return ResponseEntity.status(201).body(
-                new ApiSuccessResponse<>(201, "댓글이 성공적으로 작성되었습니다.",
-                        responseDto)
+                ApiResponse.onSuccess(responseDto, SuccessStatus._OK)
         );
     }
 
-    //댓글 수정 API
+    // 댓글 수정 API
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ApiSuccessResponse<CommentUpdateResponseDto>> updateComment(
+    public ResponseEntity<ApiResponse<CommentUpdateResponseDto>> updateComment(
             @PathVariable Long commentId,
             @RequestBody CommentUpdateRequestDto request
     ) {
         CommentUpdateResponseDto response = commentService.updateComment(commentId, request);
         return ResponseEntity.ok(
-                new ApiSuccessResponse<>(200, "댓글이 성공적으로 수정되었습니다.", response)
+                ApiResponse.onSuccess(response, SuccessStatus._OK)
         );
     }
 
-    //댓글 삭제 API
+    // 댓글 삭제 API
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiSuccessResponse<Void>> deleteComment(
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable Long commentId
     ) {
         commentService.deleteComment(commentId);
         return ResponseEntity.ok(
-                new ApiSuccessResponse<>(200, "댓글이 성공적으로 삭제되었습니다.", null)
+                ApiResponse.onSuccess(null, SuccessStatus._OK)
         );
     }
 
-    //댓글 좋아요 등록/삭제 API
+    // 댓글 좋아요 등록/삭제 API
     @PostMapping("/{commentId}/like")
-    public ResponseEntity<ApiSuccessResponse<CommentLikeResponseDto>> toggleLike(
+    public ResponseEntity<ApiResponse<CommentLikeResponseDto>> toggleLike(
             @PathVariable Long commentId
     ) {
         CommentLikeResponseDto response = commentService.toggleLike(commentId);
 
+        // 좋아요 상태에 따라 메시지 달리하고 싶다면 SuccessStatus 대신 아래처럼 of() 팩토리 메서드 사용
         String message = response.isLiked()
                 ? "댓글에 좋아요를 등록하였습니다."
                 : "댓글에 좋아요를 취소하였습니다.";
 
         return ResponseEntity.ok(
-                new ApiSuccessResponse<>(200, message, response)
+                ApiResponse.of(response, message, 200)
         );
     }
 

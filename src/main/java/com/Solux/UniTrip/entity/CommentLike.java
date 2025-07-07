@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.comment.entity;
+package com.Solux.UniTrip.entity;
 //댓글 좋아요 엔티티
 //백다현
 

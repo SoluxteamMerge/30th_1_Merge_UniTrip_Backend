@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.comment.dto;
+package com.Solux.UniTrip.dto;
 //댓글 생성 Reqeust DTO
 //백다현
 

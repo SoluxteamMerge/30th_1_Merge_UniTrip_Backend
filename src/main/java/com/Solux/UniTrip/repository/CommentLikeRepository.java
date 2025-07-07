@@ -1,8 +1,8 @@
-package com.Solux.UniTrip.comment.repository;
+package com.Solux.UniTrip.repository;
 //댓글 좋아요 레포지토리
 //백다현
 
-import com.Solux.UniTrip.comment.entity.CommentLike;
+import com.Solux.UniTrip.entity.CommentLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

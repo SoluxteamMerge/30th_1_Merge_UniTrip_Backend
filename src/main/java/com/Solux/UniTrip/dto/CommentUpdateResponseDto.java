@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.comment.dto;
+package com.Solux.UniTrip.dto;
 //댓글 수정 response dto
 //백다현
 
