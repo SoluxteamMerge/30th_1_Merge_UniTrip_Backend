@@ -91,6 +91,7 @@ public class CommentController {
 
             // 공통 로직
             private Long getUserIdFromHeader(String authorizationHeader) {
+                //  Bearer 접두사 제거
                 String token = authorizationHeader.startsWith("Bearer ")
                         ? authorizationHeader.substring(7).trim()
                         : authorizationHeader.trim();

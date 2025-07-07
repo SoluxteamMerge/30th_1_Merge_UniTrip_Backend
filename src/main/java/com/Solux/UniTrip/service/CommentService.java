@@ -28,9 +28,9 @@ public class CommentService {
     private final UserRepository userRepository;
 
 
-    //댓글 생성
+    // 댓글 생성
     public CommentResponse createComment(CommentCreateRequest dto, Long userId) {
-        if (dto == null || dto.getPostId() == null || dto.getContent() == null ||
+        if (dto == null || dto.getContent() == null ||
                 dto.getContent().trim().isEmpty()) {
             throw new BaseException(FailureStatus._BAD_REQUSET);
         }
@@ -45,7 +45,7 @@ public class CommentService {
                 .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
         Comment comment = new Comment(
-                dto.getPostId(),
+                1L, // postId 하드코딩
                 userId,
                 dto.getContent()
         );
@@ -60,6 +60,7 @@ public class CommentService {
                 .createdAt(saved.getCreatedAt())
                 .build();
     }
+
 
     //댓글 수정
     @Transactional
