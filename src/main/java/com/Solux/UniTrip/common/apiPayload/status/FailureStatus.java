@@ -13,8 +13,9 @@ public enum FailureStatus implements Basecode {
     _BAD_REQUSET(400, "잘못된 요청입니다."),
     _USER_NOT_FOUND(400, "존재하지 않는 회원입니다."),
     _UNAUTHORIZED(401, "인증되지 않은 사용자입니다."),
-    _INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다.");
-
+    _INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다."),
+    _COMMENT_NOT_FOUND(404, "해당 댓글을 찾을 수 없습니다."),
+    _POST_NOT_FOUND(404, "해당 게시글을 찾을 수 없습니다.");
 
     private final int code;
     private final String message;

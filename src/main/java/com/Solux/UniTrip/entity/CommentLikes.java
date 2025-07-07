@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "`CommentLikes`")
 @Getter
 @NoArgsConstructor
-public class CommentLike {
+public class CommentLikes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class CommentLike {
     private LocalDateTime likedAt;
 
 
-    public CommentLike(Long commentId, Long userId) {
+    public CommentLikes(Long commentId, Long userId) {
         this.commentId = commentId;
         this.userId = userId;
         this.likedAt = LocalDateTime.now();

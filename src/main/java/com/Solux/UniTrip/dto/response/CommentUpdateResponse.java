@@ -1,4 +1,4 @@
-package com.Solux.UniTrip.dto;
+package com.Solux.UniTrip.dto.response;
 //댓글 수정 response dto
 //백다현
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class CommentUpdateResponseDto {
+public class CommentUpdateResponse {
     private Long commentId;
     private String content;
     private LocalDateTime updatedAt;
