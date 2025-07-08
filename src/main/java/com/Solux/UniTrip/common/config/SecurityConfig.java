@@ -5,6 +5,7 @@ import com.Solux.UniTrip.common.jwt.JwtAuthenticationFilter;
 import com.Solux.UniTrip.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,8 +27,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/api/comments/**","/api/place/search").authenticated()
+
+                        // 댓글 목록 조회는 인증 없이 접근 허용
+                        .requestMatchers(HttpMethod.GET, "/api/comments").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success").permitAll()
+
+                        //보호경로
+                        .requestMatchers("/api/comments/**","/api/place/search").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
