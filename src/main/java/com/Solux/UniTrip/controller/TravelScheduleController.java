@@ -7,11 +7,15 @@ import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.ScheduleCreateRequest;
 import com.Solux.UniTrip.dto.request.ScheduleUpdateRequest;
+import com.Solux.UniTrip.dto.response.PageResponse;
+import com.Solux.UniTrip.dto.response.ScheduleListResponse;
 import com.Solux.UniTrip.dto.response.ScheduleResponse;
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.UserRepository;
 import com.Solux.UniTrip.service.TravelScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +59,26 @@ public class TravelScheduleController {
     ) {
         travelScheduleService.deleteSchedule(scheduleId, user);
         return ResponseEntity.ok(new ApiResponse<>(200, "일정이 성공적으로 삭제되었습니다.", null));
+    }
+
+    //일정 상세 조회
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<?> getScheduleDetail(
+            @PathVariable Long scheduleId,
+            @RequestAttribute("user") User user) {
+
+        ScheduleResponse response = travelScheduleService.getScheduleDetail(scheduleId, user);
+        return ResponseEntity.ok(new ApiResponse<>(200, "일정 상세 조회에 성공하였습니다.", response));
+    }
+
+    //일정 목록 조회
+    @GetMapping
+    public ResponseEntity<?> getScheduleList(
+            @RequestAttribute("user") User user,
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        PageResponse<ScheduleListResponse> response = travelScheduleService.getScheduleList(user, pageable);
+        return ResponseEntity.ok(new ApiResponse<>(200, "일정 목록 조회에 성공하였습니다.", response));
     }
 
 }

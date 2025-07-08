@@ -20,4 +20,20 @@ public class ScheduleResponse {
     private Boolean isPublic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static ScheduleResponse of(TravelSchedule schedule) {
+        return ScheduleResponse.builder()
+                .scheduleId(schedule.getScheduleId())
+                .title(schedule.getTitle())
+                .description(schedule.getDescription())
+                .travelType(schedule.getTravelType())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .companions(schedule.getCompanions())
+                .isPublic(schedule.getIsPublic())
+                .createdAt(schedule.getCreatedAt())
+                .updatedAt(schedule.getUpdatedAt())
+                .build();
+    }
+
 }

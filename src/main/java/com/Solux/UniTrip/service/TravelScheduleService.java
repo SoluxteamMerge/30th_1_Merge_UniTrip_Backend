@@ -4,12 +4,16 @@ import com.Solux.UniTrip.common.apiPayload.exception.*;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.dto.request.ScheduleCreateRequest;
 import com.Solux.UniTrip.dto.request.ScheduleUpdateRequest;
+import com.Solux.UniTrip.dto.response.PageResponse;
+import com.Solux.UniTrip.dto.response.ScheduleListResponse;
 import com.Solux.UniTrip.dto.response.ScheduleResponse;
 import com.Solux.UniTrip.entity.TravelSchedule;
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.TravelScheduleRepository;
 import com.Solux.UniTrip.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -131,6 +135,28 @@ public class TravelScheduleService {
 
         travelScheduleRepository.delete(schedule);
     }
+
+    //일정 상세 조회 메소드
+    @Transactional(readOnly = true)
+    public ScheduleResponse getScheduleDetail(Long scheduleId, User user) {
+        TravelSchedule schedule = travelScheduleRepository.findById(scheduleId)
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        if (!schedule.getUser().getUserId().equals(user.getUserId())) {
+            throw new ForbiddenException();
+        }
+
+        return ScheduleResponse.of(schedule);
+    }
+
+    //일정 목록 조회 메소드
+    @Transactional(readOnly = true)
+    public PageResponse<ScheduleListResponse> getScheduleList(User user, Pageable pageable) {
+        Page<TravelSchedule> schedules = travelScheduleRepository.findAllByUser(user, pageable);
+        Page<ScheduleListResponse> dtoPage = schedules.map(ScheduleListResponse::from);
+        return PageResponse.from(dtoPage);
+    }
+
 
 
 }
