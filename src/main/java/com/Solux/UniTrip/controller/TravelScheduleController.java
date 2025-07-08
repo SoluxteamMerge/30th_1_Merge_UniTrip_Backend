@@ -6,7 +6,9 @@ import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.ScheduleCreateRequest;
+import com.Solux.UniTrip.dto.request.ScheduleUpdateRequest;
 import com.Solux.UniTrip.dto.response.ScheduleResponse;
+import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.UserRepository;
 import com.Solux.UniTrip.service.TravelScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,25 @@ public class TravelScheduleController {
         return ResponseEntity.status(201).body(
                 new ApiResponse<>(201, "일정이 성공적으로 생성되었습니다.", response)
         );
-
     }
+
+    //일정 수정
+    @PatchMapping("/{scheduleId}")
+    public ResponseEntity<?> updateSchedule(@PathVariable Long scheduleId,
+                                            @RequestBody ScheduleUpdateRequest request,
+                                            @RequestAttribute("user") User user) {
+        ScheduleResponse response = travelScheduleService.updateSchedule(scheduleId, request, user);
+        return ResponseEntity.ok(new ApiResponse<>(200, "일정이 성공적으로 수정되었습니다.", response));
+    }
+
+    //일정 삭제
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<?> deleteSchedule(
+            @PathVariable Long scheduleId,
+            @RequestAttribute("user") User user
+    ) {
+        travelScheduleService.deleteSchedule(scheduleId, user);
+        return ResponseEntity.ok(new ApiResponse<>(200, "일정이 성공적으로 삭제되었습니다.", null));
+    }
+
 }

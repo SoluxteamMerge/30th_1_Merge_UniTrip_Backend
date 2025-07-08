@@ -1,15 +1,15 @@
 package com.Solux.UniTrip.service;
 
-import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
-import com.Solux.UniTrip.common.apiPayload.exception.InvalidDateFormatException;
-import com.Solux.UniTrip.common.apiPayload.exception.InvalidDateRangeException;
+import com.Solux.UniTrip.common.apiPayload.exception.*;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.dto.request.ScheduleCreateRequest;
+import com.Solux.UniTrip.dto.request.ScheduleUpdateRequest;
 import com.Solux.UniTrip.dto.response.ScheduleResponse;
 import com.Solux.UniTrip.entity.TravelSchedule;
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.TravelScheduleRepository;
 import com.Solux.UniTrip.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class TravelScheduleService {
     private final TravelScheduleRepository travelScheduleRepository;
     private final UserRepository userRepository;
 
-
+    //일정 생성 메소드
     public ScheduleResponse createSchedule(ScheduleCreateRequest req, String email) {
         // 날짜 파싱
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -73,4 +73,64 @@ public class TravelScheduleService {
                 .createdAt(saved.getCreatedAt())
                 .build();
     }
+
+    //일정 수정 메소드
+    public ScheduleResponse updateSchedule(Long scheduleId, ScheduleUpdateRequest req, User user) {
+        TravelSchedule schedule = travelScheduleRepository.findById(scheduleId)
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        // 권한 체크
+        if (!schedule.getUser().getUserId().equals(user.getUserId())) {
+            throw new ForbiddenException();
+        }
+
+        // 날짜 유효성 검사
+        if (req.getStartDate() != null && req.getEndDate() != null &&
+                req.getStartDate().isAfter(req.getEndDate())) {
+            throw new InvalidDateRangeException();
+        }
+
+        // 필드 업데이트 (null 아니면 덮어쓰기)
+        if (req.getTitle() != null) schedule.setTitle(req.getTitle());
+        if (req.getDescription() != null) schedule.setDescription(req.getDescription());
+        if (req.getTravelType() != null) schedule.setTravelType(req.getTravelType());
+        if (req.getStartDate() != null) schedule.setStartDate(req.getStartDate());
+        if (req.getEndDate() != null) schedule.setEndDate(req.getEndDate());
+        if (req.getCompanions() != null) schedule.setCompanions(req.getCompanions());
+        if (req.getIsPublic() != null) schedule.setIsPublic(req.getIsPublic());
+
+        // 업데이트 시간 갱신
+        schedule.setUpdatedAt(LocalDateTime.now());
+
+        TravelSchedule updated = travelScheduleRepository.save(schedule);
+
+        return ScheduleResponse.builder()
+                .scheduleId(updated.getScheduleId())
+                .title(updated.getTitle())
+                .description(updated.getDescription())
+                .travelType(updated.getTravelType())
+                .startDate(updated.getStartDate())
+                .endDate(updated.getEndDate())
+                .companions(updated.getCompanions())
+                .isPublic(updated.getIsPublic())
+                .createdAt(updated.getCreatedAt())
+                .updatedAt(updated.getUpdatedAt())
+                .build();
+    }
+
+    //일정 삭제 메소드
+    @Transactional
+    public void deleteSchedule(Long scheduleId, User user) {
+        TravelSchedule schedule = travelScheduleRepository.findById(scheduleId)
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        //권한 체크
+        if (!schedule.getUser().getUserId().equals(user.getUserId())) {
+            throw new ForbiddenException();
+        }
+
+        travelScheduleRepository.delete(schedule);
+    }
+
+
 }

@@ -19,4 +19,5 @@ public class ScheduleResponse {
     private String companions;
     private Boolean isPublic;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

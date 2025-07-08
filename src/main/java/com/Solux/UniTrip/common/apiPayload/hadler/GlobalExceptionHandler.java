@@ -3,15 +3,31 @@ package com.Solux.UniTrip.common.apiPayload.hadler;
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
 import com.Solux.UniTrip.common.apiPayload.exception.*;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException e) {
+        return ResponseEntity
+                .status(e.getFailureStatus().getCode())
+                .body(ApiResponse.onFailure(null, e.getFailureStatus()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException e) {
+        return ResponseEntity
+                .status(e.getFailureStatus().getCode())
+                .body(ApiResponse.onFailure(null, e.getFailureStatus()));
+    }
+
+    @ExceptionHandler(ScheduleNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(ScheduleNotFoundException e) {
         return ResponseEntity
                 .status(e.getFailureStatus().getCode())
                 .body(ApiResponse.onFailure(null, e.getFailureStatus()));
@@ -47,8 +63,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+        log.error("Unhandled Exception occurred: ", e); // 로그 추가
         return ResponseEntity
                 .internalServerError()
                 .body(ApiResponse.onFailure(null, FailureStatus._INTERNAL_SERVER_ERROR));
     }
+
 }
