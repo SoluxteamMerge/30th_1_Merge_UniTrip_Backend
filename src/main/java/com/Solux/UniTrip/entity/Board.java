@@ -1,5 +1,6 @@
 package com.Solux.UniTrip.entity;
 
+import com.Solux.UniTrip.dto.request.BoardRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -10,7 +11,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Board {
 
     @Id
@@ -44,8 +44,37 @@ public class Board {
     @Column(nullable = false)
     private int likes;
 
-    public enum BoardType {
-        동행모집, 모임구인, 졸업_휴학여행, 국내학점교류, 해외교환, MT_LT
+    // 여행 모집용 필드
+    private String placeName;
+    private String roadAddress;
+    private String kakaoPlaceId;
+    private Double latitude;
+    private Double longitude;
+    private Boolean overnightFlag;
+    private Integer recruitmentCnt;
+
+    public Board(BoardRequest request, User user, PostCategory category) {
+        this.boardType = BoardType.valueOf(request.getBoardType());
+        this.category = category;
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.placeName = request.getPlaceName();
+        this.roadAddress = request.getRoadAddress();
+        this.kakaoPlaceId = request.getKakaoPlaceId();
+        this.latitude = request.getLatitude();
+        this.longitude = request.getLongitude();
+        this.overnightFlag = request.getOvernightFlag();
+        this.recruitmentCnt = request.getRecruitmentCnt();
+        this.user = user;
+        this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
+        this.views = 0;
+        this.likes = 0;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 }
-

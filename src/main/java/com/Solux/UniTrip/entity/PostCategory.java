@@ -17,7 +17,7 @@ public class PostCategory {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Board.BoardType boardType;  // BoardType 재사용 가능
+    private BoardType boardType;  // BoardType 재사용 가능
 
     @Column(nullable = false, length = 50)
     private String categoryName;

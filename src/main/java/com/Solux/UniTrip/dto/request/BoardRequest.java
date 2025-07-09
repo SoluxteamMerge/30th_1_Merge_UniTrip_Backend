@@ -1,9 +1,9 @@
-package com.Solux.UniTrip.dto;
+package com.Solux.UniTrip.dto.request;
 
 import lombok.Getter;
 
 @Getter
-public class ReviewRequest {
+public class BoardRequest {
     private String boardType;
     private String categoryName;
     private String title;
