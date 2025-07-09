@@ -7,6 +7,7 @@ import com.Solux.UniTrip.dto.response.CommentLikeResponse;
 import com.Solux.UniTrip.dto.response.CommentResponse;
 import com.Solux.UniTrip.dto.request.CommentUpdateRequest;
 import com.Solux.UniTrip.dto.response.CommentUpdateResponse;
+import com.Solux.UniTrip.dto.response.PageResponse;
 import com.Solux.UniTrip.entity.Comment;
 import com.Solux.UniTrip.entity.CommentLikes;
 import com.Solux.UniTrip.entity.User;
@@ -15,9 +16,15 @@ import com.Solux.UniTrip.repository.CommentRepository;
 import com.Solux.UniTrip.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -124,4 +131,28 @@ public class CommentService {
                 .likeCount(comment.getLikeCount())
                 .build();
     }
+
+    //댓글 목록 조회
+    public PageResponse<CommentResponse> getComments(Long postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+
+        Page<CommentResponse> responsePage = commentPage.map(comment -> {
+            String nickname = userRepository.findById(comment.getUserId())
+                    .map(User::getNickname)
+                    .orElse("알 수 없음");
+
+            return CommentResponse.builder()
+                    .commentId(comment.getCommentId())
+                    .postId(comment.getPostId())
+                    .content(comment.getContent())
+                    .author(nickname)
+                    .createdAt(comment.getCreatedAt())
+                    .likeCount(comment.getLikeCount())
+                    .build();
+        });
+
+        return PageResponse.from(responsePage);
+    }
+
 }

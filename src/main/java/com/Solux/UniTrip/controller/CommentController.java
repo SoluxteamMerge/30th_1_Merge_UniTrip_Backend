@@ -8,6 +8,7 @@ import com.Solux.UniTrip.dto.response.CommentLikeResponse;
 import com.Solux.UniTrip.dto.response.CommentResponse;
 import com.Solux.UniTrip.dto.request.CommentUpdateRequest;
 import com.Solux.UniTrip.dto.response.CommentUpdateResponse;
+import com.Solux.UniTrip.dto.response.PageResponse;
 import com.Solux.UniTrip.repository.UserRepository;
 import com.Solux.UniTrip.service.CommentService;
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
@@ -77,19 +78,35 @@ public class CommentController {
                     @RequestHeader("Authorization") String authorizationHeader,
                     @PathVariable Long commentId
     ) {
-                Long userId = getUserIdFromHeader(authorizationHeader);
-                CommentLikeResponse response = commentService.toggleLike(commentId, userId);
+            Long userId = getUserIdFromHeader(authorizationHeader);
+            CommentLikeResponse response = commentService.toggleLike(commentId, userId);
 
-                String message = response.isLiked()
-                        ? "댓글에 좋아요를 등록하였습니다."
-                        : "댓글에 좋아요를 취소하였습니다.";
+            String message = response.isLiked()
+                    ? "댓글에 좋아요를 등록하였습니다."
+                    : "댓글에 좋아요를 취소하였습니다.";
 
-                return ResponseEntity.ok(
-                        ApiResponse.of(response, message, 200)
-                );
-            }
+            return ResponseEntity.ok(
+                    ApiResponse.of(response, message, 200)
+            );
+        }
 
-            // 공통 로직
+    // 댓글 목록 조회 API
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getComments(
+            @RequestParam Long postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<CommentResponse> response = commentService.getComments(postId, page, size);
+
+        return ResponseEntity.ok(
+                ApiResponse.onSuccess(response, SuccessStatus._OK)
+        );
+    }
+
+
+
+    // 공통 로직
             private Long getUserIdFromHeader(String authorizationHeader) {
                 //  Bearer 접두사 제거
                 String token = authorizationHeader.startsWith("Bearer ")
