@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success").permitAll()
 
                         //보호경로
-                        .requestMatchers("/api/comments/**","/api/place/search").authenticated()
+                        .requestMatchers("/api/comments/**","/api/place/search", "/api/reviews").authenticated()
 
                         .anyRequest().authenticated()
                 )
