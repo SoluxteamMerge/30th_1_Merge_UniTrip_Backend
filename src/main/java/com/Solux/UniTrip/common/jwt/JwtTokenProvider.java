@@ -45,13 +45,18 @@ public class JwtTokenProvider {
 
     // JWT 토큰 유효성 검사
     public boolean validateToken(final String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .after(new Date());
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration()
+                    .after(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println("JWT 검증 실패: " + e.getMessage());
+            return false;
+        }
     }
 }
 

@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/google")
-public class UserController {
+public class AuthController {
 
     @GetMapping("/login")
     public Map<String, Object> getCurrentUser(@AuthenticationPrincipal OAuth2User oAuth2User) {

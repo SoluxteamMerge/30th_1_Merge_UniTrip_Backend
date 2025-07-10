@@ -2,7 +2,12 @@ package com.Solux.UniTrip.service;
 //실제 카카오맵 서비스 api를 호출해서 장소 검색 결과를 받아오는 서비스
 //받아온 Json 데이터를 placesearchresponse 객체 리스트로 변환해서 컨트롤러에 넘겨줌
 
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.response.PlaceSearchResponse;
+import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,6 +29,7 @@ public class PlaceSearchService {
 
     //장소 검색 메서드
     public List<PlaceSearchResponse> searchPlaces(String keyword, String accessToken) {
+
         //String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
         String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=" + keyword;
 
