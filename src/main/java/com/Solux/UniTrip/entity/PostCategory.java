@@ -13,11 +13,12 @@ import lombok.*;
 public class PostCategory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // 자동증가 설정
     private Integer categoryId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardType boardType;  // BoardType 재사용 가능
+    private BoardType boardType;
 
     @Column(nullable = false, length = 50)
     private String categoryName;

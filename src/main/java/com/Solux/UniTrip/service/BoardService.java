@@ -4,9 +4,11 @@ import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.BoardType;
+import com.Solux.UniTrip.entity.GroupRecruitBoard;
 import com.Solux.UniTrip.entity.PostCategory;
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.BoardRepository;
+import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,23 +18,50 @@ import org.springframework.stereotype.Service;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final PostCategoryRepository categoryRepository;
+    private final GroupRecruitBoardRepository groupRecruitBoardRepository;
 
     public BoardResponse createBoard(BoardRequest request, User user) {
         if (user == null) {
             throw new RuntimeException("User cannot be null");
         }
 
-        // BoardType enum 값 변환
-        BoardType boardType = BoardType.valueOf(request.getBoardType());
+        BoardType boardType = BoardType.valueOf(request.getBoardType()); // enum 사용
 
-        // boardType과 categoryName을 같이 조건으로 카테고리 조회
-        PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(boardType, request.getCategoryName())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        // categoryName을 enum 없이 문자열로 찾기
+        String categoryName = request.getCategoryName();
 
-        // Board 엔티티의 생성자 사용
+        // categoryName이 비어있으면 저장 안 함
+        if (categoryName == null || categoryName.trim().isEmpty()) {
+            throw new RuntimeException("Category name must not be empty");
+        }
+
+        // boardType과 categoryName으로 카테고리 찾기
+        PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(boardType, categoryName)
+                .orElseGet(() -> {
+                    // category가 없으면 새로 생성 후 저장
+                    PostCategory newCategory = new PostCategory();
+                    newCategory.setBoardType(boardType);
+                    newCategory.setCategoryName(categoryName);
+                    return categoryRepository.save(newCategory);
+                });
+
+        // Board 생성
         Board board = new Board(request, user, category);
+        Board savedBoard = boardRepository.save(board);
 
-        Board saved = boardRepository.save(board);
-        return new BoardResponse(200, saved.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
+        // boardType이 "모임구인"이면 GroupRecruitBoard 저장
+        if (boardType == BoardType.모임구인) {
+            if (request.getOvernightFlag() == null || request.getRecruitmentCnt() == null) {
+                throw new RuntimeException("overnightFlag and recruitmentCnt must not be null for 모임구인 type");
+            }
+            GroupRecruitBoard groupRecruitBoard = new GroupRecruitBoard(
+                    savedBoard,
+                    request.getOvernightFlag(),
+                    request.getRecruitmentCnt()
+            );
+            groupRecruitBoardRepository.save(groupRecruitBoard);
+        }
+
+        return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
     }
 }

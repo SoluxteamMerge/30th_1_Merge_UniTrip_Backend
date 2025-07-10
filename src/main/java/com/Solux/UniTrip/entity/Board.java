@@ -50,8 +50,6 @@ public class Board {
     private String kakaoPlaceId;
     private Double latitude;
     private Double longitude;
-    private Boolean overnightFlag;
-    private Integer recruitmentCnt;
 
     public Board(BoardRequest request, User user, PostCategory category) {
         this.boardType = BoardType.valueOf(request.getBoardType());
@@ -63,8 +61,6 @@ public class Board {
         this.kakaoPlaceId = request.getKakaoPlaceId();
         this.latitude = request.getLatitude();
         this.longitude = request.getLongitude();
-        this.overnightFlag = request.getOvernightFlag();
-        this.recruitmentCnt = request.getRecruitmentCnt();
         this.user = user;
         this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
         this.views = 0;
