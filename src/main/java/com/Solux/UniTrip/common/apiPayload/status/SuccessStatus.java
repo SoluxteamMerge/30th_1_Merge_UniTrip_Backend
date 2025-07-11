@@ -15,7 +15,8 @@ public enum SuccessStatus implements Basecode {
     _LOGOUT_SUCCESS(200, "로그아웃 되었습니다."),
     _MODIFY_USER_INFO_SUCCESS(200, "개인 정보 수정에 성공하였습니다."),
     _USER_DELETED(200, "회원 탈퇴 되었습니다."),
-    _GET_USER_INFO_SUCCESS(200, "회원정보 조회에 성공하였습니다.");
+    _GET_USER_INFO_SUCCESS(200, "회원정보 조회에 성공하였습니다."),
+    _USER_PROFILE_REGISTERED(200, "회원정보가 등록되었습니다.");
 
     private final int code;
     private final String message;

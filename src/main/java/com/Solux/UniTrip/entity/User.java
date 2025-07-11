@@ -54,4 +54,11 @@ public class User {
         this.userType = userType;
     }
 
+    public void updateProfile(String nickname, String phoneNumber, UserType userType, boolean emailVerified) {
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+        this.userType = userType;
+        this.emailVerified = emailVerified;
+    }
+
 }
