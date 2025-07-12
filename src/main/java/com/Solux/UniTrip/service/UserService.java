@@ -63,6 +63,21 @@ public class UserService {
         );
     }
 
+    //닉네임 중복 확인
+    @Transactional
+    public boolean checkNickname(String token, String nickname) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalStateException(("Invalid Token"));
+        }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        //닉네임 중복 체크
+        boolean isDuplicated = userRepository.existsByNickname(nickname);
+        return isDuplicated;
+    }
+
     //사용자 정보 수정
     @Transactional
     public void modifyProfile(String token, UserProfileModifyRequest request) {

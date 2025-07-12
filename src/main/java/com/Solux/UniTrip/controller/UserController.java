@@ -1,6 +1,7 @@
 package com.Solux.UniTrip.controller;
 
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -41,6 +43,21 @@ public class UserController {
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
         userService.registerProfile(accessToken, request);
         return ApiResponse.onSuccess(null, SuccessStatus._USER_PROFILE_REGISTERED);
+    }
+
+    //닉네임 중복 확인
+    @GetMapping("/check")
+    public ApiResponse<?> checkNickname(
+            @RequestHeader("Authorization") String token,
+            @RequestParam String nickname
+    ) {
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        boolean isDuplicated = userService.checkNickname(accessToken, nickname);
+        return ApiResponse.onSuccess(
+                Map.of("isDuplicated", isDuplicated),
+                isDuplicated ? SuccessStatus._NICKNAME_DUPLICATED : SuccessStatus._NICKNAME_AVAILABLE
+        );
+
     }
 
     //사용자 정보 수정
