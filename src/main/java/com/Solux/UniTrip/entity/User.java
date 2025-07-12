@@ -54,8 +54,12 @@ public class User {
     public void update(String name, String email, String nickname, UserType userType) {
         this.name = name;
         this.email = email;
-        this.nickname = nickname;
-        this.userType = userType;
+        if (nickname != null && !nickname.isEmpty() && !nickname.equals("defaultNickname")) {
+            this.nickname = nickname;
+        }
+        if (userType != null && userType != UserType.PERSONAL) {
+            this.userType = userType;
+        }
     }
 
     public void updateProfile(String nickname, String phoneNumber, UserType userType, boolean emailVerified) {
