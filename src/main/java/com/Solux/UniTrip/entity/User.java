@@ -3,6 +3,7 @@ package com.Solux.UniTrip.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -41,6 +42,9 @@ public class User {
 
     @Column(name = "profile_image_url")
     private String profileImageUrl;
+
+    @OneToMany(mappedBy = "user")
+    private List<Board> boardList;
 
     public enum UserType {
         PERSONAL,

@@ -4,6 +4,7 @@ import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
 import com.Solux.UniTrip.service.UserService;
@@ -53,8 +54,18 @@ public class UserController {
         return ApiResponse.onSuccess(null, SuccessStatus._MODIFY_USER_INFO_SUCCESS);
     }
 
+    //내가 쓴 리뷰 조회
+    @GetMapping("/reviews")
+    public ApiResponse<List<ReviewResultResponse>> getReviews(
+            @RequestHeader("Authorization") String token
+    ){
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        List<ReviewResultResponse> reviews = userService.getReviews(accessToken);
+        return ApiResponse.onSuccess(reviews, SuccessStatus._GET_REVIEWS_SUCCESS);
+    }
+
     //스크랩한 리뷰 조회
-    @GetMapping("/scrap")
+    @GetMapping("/scraps")
     public ApiResponse<List<ScrapResponse>> getScraps(
             @RequestHeader("Authorization") String token
     ){

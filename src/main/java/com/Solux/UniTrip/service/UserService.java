@@ -5,8 +5,10 @@ import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
+import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.Scrap;
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.ScrapRepository;
@@ -111,6 +113,23 @@ public class UserService {
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
         return new UserInfoResponse(user.getName(), user.getNickname(), user.getProfileImageUrl());
+    }
+
+    //내가 쓴 리뷰 조회
+    @Transactional(readOnly = true)
+    public List<ReviewResultResponse> getReviews(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        //리뷰 목록 가져오기
+        List<Board> reviews = user.getBoardList();
+
+        return reviews.stream()
+                .map(review -> ReviewResultResponse.from(review))
+                .toList();
     }
 
     //스크랩한 리뷰 조회

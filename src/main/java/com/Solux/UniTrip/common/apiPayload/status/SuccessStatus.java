@@ -17,7 +17,8 @@ public enum SuccessStatus implements Basecode {
     _USER_DELETED(200, "회원 탈퇴 되었습니다."),
     _GET_USER_INFO_SUCCESS(200, "회원정보 조회에 성공하였습니다."),
     _USER_PROFILE_REGISTERED(200, "회원정보가 등록되었습니다."),
-    _GET_SCRAPS_SUCCESS(200, "스크랩한 리뷰 조회에 성공하였습니다.");
+    _GET_SCRAPS_SUCCESS(200, "스크랩한 리뷰 조회에 성공하였습니다."),
+    _GET_REVIEWS_SUCCESS(200, "내가 쓴 리뷰 조회에 성공하였습니다.");
 
     private final int code;
     private final String message;

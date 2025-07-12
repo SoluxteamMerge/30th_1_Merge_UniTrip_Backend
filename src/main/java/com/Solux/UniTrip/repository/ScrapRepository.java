@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
-    Optional<Scrap> findByUserAndPost(User user, Board board);
+    Optional<Scrap> findByUserAndBoard(User user, Board board);
     boolean existsByUserAndBoard(User user, Board board);
     List<Scrap> findAllByUser(User user);
-    long countByBoard(Board board);
 }
