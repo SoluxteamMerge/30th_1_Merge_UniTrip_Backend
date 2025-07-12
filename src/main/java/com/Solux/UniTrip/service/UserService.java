@@ -5,13 +5,18 @@ import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
+import com.Solux.UniTrip.entity.Scrap;
 import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.ScrapRepository;
 import com.Solux.UniTrip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -19,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ScrapRepository scrapRepository;
 
     //회원 탈퇴
     public void deleteUser(String token) {
@@ -105,5 +111,22 @@ public class UserService {
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
         return new UserInfoResponse(user.getName(), user.getNickname(), user.getProfileImageUrl());
+    }
+
+    //스크랩한 리뷰 조회
+    @Transactional(readOnly = true)
+    public List<ScrapResponse> getScraps(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        //스크랩 목록 가져오기
+        List<Scrap> scraps = scrapRepository.findAllByUser(user);
+
+        return scraps.stream()
+                .map(scrap -> ScrapResponse.from(scrap.getBoard()))
+                .toList();
     }
 }

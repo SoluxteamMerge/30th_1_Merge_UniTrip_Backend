@@ -4,6 +4,7 @@ import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
 import com.Solux.UniTrip.service.UserService;
 import jakarta.validation.Valid;
@@ -12,12 +13,15 @@ import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
+    //사용자 정보 조회
     @GetMapping
     public ApiResponse<UserInfoResponse> getUserInfo(
             @RequestHeader("Authorization") String token
@@ -27,6 +31,7 @@ public class UserController {
         return ApiResponse.onSuccess(userInfo, SuccessStatus._GET_USER_INFO_SUCCESS);
     }
 
+    //사용자 정보 등록
     @PostMapping("/profile")
     public ApiResponse<?> registerProfile(
             @RequestHeader("Authorization") String token,
@@ -37,6 +42,7 @@ public class UserController {
         return ApiResponse.onSuccess(null, SuccessStatus._USER_PROFILE_REGISTERED);
     }
 
+    //사용자 정보 수정
     @PatchMapping("/modify")
     public ApiResponse<?> modifyProfile(
             @RequestHeader("Authorization") String token,
@@ -45,6 +51,16 @@ public class UserController {
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
         userService.modifyProfile(accessToken, request);
         return ApiResponse.onSuccess(null, SuccessStatus._MODIFY_USER_INFO_SUCCESS);
+    }
+
+    //스크랩한 리뷰 조회
+    @GetMapping("/scrap")
+    public ApiResponse<List<ScrapResponse>> getScraps(
+            @RequestHeader("Authorization") String token
+    ){
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        List<ScrapResponse> scraps = userService.getScraps(accessToken);
+        return ApiResponse.onSuccess(scraps, SuccessStatus._GET_SCRAPS_SUCCESS);
     }
 
     //회원 탈퇴
