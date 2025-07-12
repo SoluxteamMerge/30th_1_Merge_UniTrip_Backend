@@ -50,7 +50,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
         //이미 등록된 닉네임
-        if (user.getNickname() != null) {
+        if (!user.getNickname().equals("defaultNickname")) {
             throw new BaseException(FailureStatus._PROFILE_ALREADY_REGISTERED);
         }
 
@@ -89,7 +89,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
         //닉네임이 없는 경우 : 프로필이 등록되지 않은 사용자
-        if (user.getNickname() == null) {
+        if (user.getNickname().equals("defaultNickname")) {
             throw new BaseException(FailureStatus._PROFILE_NOT_REGISTERED);
         }
 
