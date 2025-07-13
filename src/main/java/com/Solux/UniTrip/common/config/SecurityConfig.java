@@ -30,8 +30,13 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
 
                         // 댓글 목록 조회는 인증 없이 접근 허용
-                        .requestMatchers(HttpMethod.GET, "/api/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/comments", "/api/reviews").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success", "/google/login").permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/reviews"
+                        ).authenticated()
 
                         //보호경로
                         .requestMatchers(

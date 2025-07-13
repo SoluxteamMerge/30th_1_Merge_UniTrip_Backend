@@ -2,6 +2,7 @@ package com.Solux.UniTrip.common.jwt;
 
 import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,42 +33,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
+        String method = request.getMethod();
 
-        // 로그인/회원가입 등 토큰 필요 없는 경로는 필터 동작 안 함
-        if (path.startsWith("/api/google/login") || path.startsWith("/oauth2") || path.startsWith("/public")) {
+        // ✅ 인증 필요 없는 경로 예외 처리
+        if (path.startsWith("/api/google/login")
+                || path.startsWith("/oauth2")
+                || path.startsWith("/public")
+                || ("GET".equals(method) && (path.startsWith("/api/reviews") || path.startsWith("/api/comments")))) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = resolveToken(request);
 
-        // 토큰이 없거나 유효하지 않으면 여기서 401 JSON 응답 반환
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             sendUnauthorizedResponse(response);
             return;
         }
 
         String email = jwtTokenProvider.getEmailFromToken(token);
-
-        User user = userRepository.findByEmail(email)
-                .orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
             sendUnauthorizedResponse(response);
             return;
         }
 
-        request.setAttribute("user", user);
-
+        // SecurityContext에 인증 정보 저장
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         email,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_USER")) // 권한 부여
+                        List.of(new SimpleGrantedAuthority("ROLE_USER"))
                 );
-
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

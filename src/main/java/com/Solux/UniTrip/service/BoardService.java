@@ -1,6 +1,8 @@
 package com.Solux.UniTrip.service;
 
 import com.Solux.UniTrip.dto.request.BoardRequest;
+import com.Solux.UniTrip.dto.response.BoardItemResponse;
+import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.BoardType;
@@ -12,6 +14,8 @@ import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +67,32 @@ public class BoardService {
         }
 
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
+    }
+
+    public BoardListResponse getAllCard() {
+        List<Board> boards = boardRepository.findAll();
+
+        List<BoardItemResponse> items = boards.stream()
+                .map(board -> BoardItemResponse.builder()
+                        .postId(board.getPostId())
+                        .boardType(board.getBoardType().toString())
+                        .categoryName(String.valueOf(board.getCategory()))
+                        .title(board.getTitle())
+                        .userId(board.getUser().getUserId())
+                        .nickname(board.getUser().getNickname())
+                        .createdAt(board.getCreatedAt().toString())
+                        .commentCount(0)
+                        .likes(board.getLikes())
+                        .scrapCount(0)
+                        .isLiked(false)
+                        .isScraped(false)
+                        .thumbnailUrl("")
+                        .build())
+                .toList();
+
+        return BoardListResponse.builder()
+                .total(items.size())
+                .reviews(items)
+                .build();
     }
 }
