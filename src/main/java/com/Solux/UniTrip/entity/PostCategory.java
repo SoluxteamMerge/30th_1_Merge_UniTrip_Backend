@@ -22,5 +22,6 @@ public class PostCategory {
 
     @Column(nullable = false, length = 50)
     private String categoryName;
+
 }
 

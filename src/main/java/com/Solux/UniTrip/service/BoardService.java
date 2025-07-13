@@ -1,6 +1,8 @@
 package com.Solux.UniTrip.service;
 
 import com.Solux.UniTrip.dto.request.BoardRequest;
+import com.Solux.UniTrip.dto.response.BoardItemResponse;
+import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.BoardType;
@@ -12,6 +14,8 @@ import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +67,52 @@ public class BoardService {
         }
 
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
+    }
+
+    public BoardListResponse getAllCard() {
+        List<Board> boards = boardRepository.findAll();
+        return convertToBoardListResponse(boards);
+    }
+
+    public BoardListResponse getCardsByBoardType(BoardType boardType) {
+        List<Board> boards = boardRepository.findByBoardType(boardType);
+        return convertToBoardListResponse(boards);
+    }
+
+    // 단건 조회
+    public BoardItemResponse getBoardById(Long postId) {
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return convertToBoardItemResponse(board);
+    }
+
+    private BoardListResponse convertToBoardListResponse(List<Board> boards) {
+        List<BoardItemResponse> items = boards.stream()
+                .map(this::convertToBoardItemResponse)
+                .toList();
+
+        return BoardListResponse.builder()
+                .total(items.size())
+                .reviews(items)
+                .build();
+    }
+
+    private BoardItemResponse convertToBoardItemResponse(Board board) {
+        return BoardItemResponse.builder()
+                .postId(board.getPostId())
+                .boardType(board.getBoardType().toString())
+                .categoryName(board.getCategory().getCategoryName())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .userId(board.getUser().getUserId())
+                .nickname(board.getUser().getNickname())
+                .createdAt(board.getCreatedAt().toString())
+                .commentCount(0)
+                .likes(board.getLikes())
+                .scrapCount(0)
+                .isLiked(false)
+                .isScraped(false)
+                .thumbnailUrl("")
+                .build();
     }
 }
