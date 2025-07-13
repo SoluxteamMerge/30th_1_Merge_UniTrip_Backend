@@ -35,11 +35,11 @@ public class Board {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private int views;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @Column(nullable = false)
+    private int views;
 
     @Column(nullable = false)
     private int likes;
