@@ -71,28 +71,40 @@ public class BoardService {
 
     public BoardListResponse getAllCard() {
         List<Board> boards = boardRepository.findAll();
+        return convertToBoardListResponse(boards);
+    }
 
+    public BoardListResponse getCardsByBoardType(BoardType boardType) {
+        List<Board> boards = boardRepository.findByBoardType(boardType);
+        return convertToBoardListResponse(boards);
+    }
+
+    private BoardListResponse convertToBoardListResponse(List<Board> boards) {
         List<BoardItemResponse> items = boards.stream()
-                .map(board -> BoardItemResponse.builder()
-                        .postId(board.getPostId())
-                        .boardType(board.getBoardType().toString())
-                        .categoryName(String.valueOf(board.getCategory()))
-                        .title(board.getTitle())
-                        .userId(board.getUser().getUserId())
-                        .nickname(board.getUser().getNickname())
-                        .createdAt(board.getCreatedAt().toString())
-                        .commentCount(0)
-                        .likes(board.getLikes())
-                        .scrapCount(0)
-                        .isLiked(false)
-                        .isScraped(false)
-                        .thumbnailUrl("")
-                        .build())
+                .map(this::convertToBoardItemResponse)
                 .toList();
 
         return BoardListResponse.builder()
                 .total(items.size())
                 .reviews(items)
+                .build();
+    }
+
+    private BoardItemResponse convertToBoardItemResponse(Board board) {
+        return BoardItemResponse.builder()
+                .postId(board.getPostId())
+                .boardType(board.getBoardType().toString())
+                .categoryName(String.valueOf(board.getCategory()))
+                .title(board.getTitle())
+                .userId(board.getUser().getUserId())
+                .nickname(board.getUser().getNickname())
+                .createdAt(board.getCreatedAt().toString())
+                .commentCount(0)
+                .likes(board.getLikes())
+                .scrapCount(0)
+                .isLiked(false)
+                .isScraped(false)
+                .thumbnailUrl("")
                 .build();
     }
 }
