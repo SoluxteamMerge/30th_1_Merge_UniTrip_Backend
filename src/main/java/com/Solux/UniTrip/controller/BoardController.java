@@ -1,6 +1,7 @@
 package com.Solux.UniTrip.controller;
 
 import com.Solux.UniTrip.dto.request.BoardRequest;
+import com.Solux.UniTrip.dto.response.BoardItemResponse;
 import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.entity.BoardType;
@@ -33,10 +34,17 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    // 리뷰 조회(게시판별)
     @GetMapping(params = "boardType")
     public ResponseEntity<BoardListResponse> getBoardsByType(@RequestParam BoardType boardType) {
         BoardListResponse response = boardService.getCardsByBoardType(boardType);
         return ResponseEntity.ok(response);
     }
-    
+
+    // 리뷰 상세 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId) {
+        BoardItemResponse response = boardService.getBoardById(postId);
+        return ResponseEntity.ok(response);
+    }
 }

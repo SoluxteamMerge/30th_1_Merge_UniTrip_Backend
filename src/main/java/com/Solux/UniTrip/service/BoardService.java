@@ -79,6 +79,13 @@ public class BoardService {
         return convertToBoardListResponse(boards);
     }
 
+    // 단건 조회
+    public BoardItemResponse getBoardById(Long postId) {
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return convertToBoardItemResponse(board);
+    }
+
     private BoardListResponse convertToBoardListResponse(List<Board> boards) {
         List<BoardItemResponse> items = boards.stream()
                 .map(this::convertToBoardItemResponse)
@@ -94,8 +101,9 @@ public class BoardService {
         return BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
-                .categoryName(String.valueOf(board.getCategory()))
+                .categoryName(board.getCategory().getCategoryName())
                 .title(board.getTitle())
+                .content(board.getContent())
                 .userId(board.getUser().getUserId())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())

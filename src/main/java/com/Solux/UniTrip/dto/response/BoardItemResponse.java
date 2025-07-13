@@ -13,6 +13,7 @@ public class BoardItemResponse {
     private String boardType;
     private String categoryName;
     private String title;
+    private String content;
     private Long userId;
     private String nickname;
     private String createdAt;
