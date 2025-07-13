@@ -15,6 +15,8 @@ import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +80,12 @@ public class UserController {
     ){
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
         List<ReviewResultResponse> reviews = userService.getReviews(accessToken);
+
+        //아직 작성한 리뷰가 없는 경우
+        if (reviews.isEmpty()) {
+            return ApiResponse.onSuccess(null,SuccessStatus._REVIEW_LIST_EMPTY);
+        }
+
         return ApiResponse.onSuccess(reviews, SuccessStatus._GET_REVIEWS_SUCCESS);
     }
 
@@ -88,6 +96,12 @@ public class UserController {
     ){
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
         List<ScrapResponse> scraps = userService.getScraps(accessToken);
+
+        //아직 스크랩한 리뷰가 없는 경우
+        if (scraps.isEmpty()) {
+            return ApiResponse.onSuccess(null,SuccessStatus._SCRAPS_LIST_EMPTY);
+        }
+
         return ApiResponse.onSuccess(scraps, SuccessStatus._GET_SCRAPS_SUCCESS);
     }
 
