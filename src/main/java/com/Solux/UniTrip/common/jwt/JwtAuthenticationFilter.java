@@ -43,7 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/api/comments")
                 || path.equals("/api/schedules")         //일정 목록 조회
                 || path.matches("^/api/schedules/\\d+$") // 일정 상세 조회
-        ))) {
+                ||path.equals("/api/keywords/popular")
+        ))
+                || ("POST".equals(method) && path.equals("/api/keywords/rank"))
+        ) {
             filterChain.doFilter(request, response);
             return;
         }

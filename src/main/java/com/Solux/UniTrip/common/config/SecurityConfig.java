@@ -29,9 +29,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/schedules", "/api/schedules/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/schedules", "/api/schedules/*","/api/keywords/popular").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/comments", "/api/reviews/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success", "/google/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/keywords/rank").permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,

@@ -26,7 +26,5 @@ public class KeywordRanking {
     @Column(name = "calculated_at", nullable = false)
     private LocalDateTime calculatedAt;
 
-    @Column(name = "category_id", nullable = false)
-    private int categoryId;
 }
 
