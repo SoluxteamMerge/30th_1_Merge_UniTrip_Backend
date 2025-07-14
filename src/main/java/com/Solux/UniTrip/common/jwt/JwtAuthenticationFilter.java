@@ -39,7 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/google/login")
                 || path.startsWith("/oauth2")
                 || path.startsWith("/public")
-                || ("GET".equals(method) && (path.startsWith("/api/reviews") || path.startsWith("/api/comments")))) {
+                || ("GET".equals(method) && (path.startsWith("/api/reviews")
+                || path.startsWith("/api/comments")
+                || path.equals("/api/schedules")         //일정 목록 조회
+                || path.matches("^/api/schedules/\\d+$") // 일정 상세 조회
+        ))) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -136,26 +136,24 @@ public class TravelScheduleService {
         travelScheduleRepository.delete(schedule);
     }
 
-    //일정 상세 조회 메소드
+    //일정 상세 조회
     @Transactional(readOnly = true)
     public ScheduleResponse getScheduleDetail(Long scheduleId, User user) {
         TravelSchedule schedule = travelScheduleRepository.findById(scheduleId)
                 .orElseThrow(ScheduleNotFoundException::new);
 
-        if (!schedule.getUser().getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException();
-        }
-
+        // 작성자와 일치하지 않아도 열람 허용
         return ScheduleResponse.of(schedule);
     }
 
-    //일정 목록 조회 메소드
+    //일정 목록 조회
     @Transactional(readOnly = true)
-    public PageResponse<ScheduleListResponse> getScheduleList(User user, Pageable pageable) {
-        Page<TravelSchedule> schedules = travelScheduleRepository.findAllByUser(user, pageable);
+    public PageResponse<ScheduleListResponse> getScheduleList(Pageable pageable) {
+        Page<TravelSchedule> schedules = travelScheduleRepository.findAll(pageable);
         Page<ScheduleListResponse> dtoPage = schedules.map(ScheduleListResponse::from);
         return PageResponse.from(dtoPage);
     }
+
 
 
 

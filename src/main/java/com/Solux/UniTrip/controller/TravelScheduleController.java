@@ -61,24 +61,25 @@ public class TravelScheduleController {
         return ResponseEntity.ok(new ApiResponse<>(200, "일정이 성공적으로 삭제되었습니다.", null));
     }
 
-    //일정 상세 조회
+    // 일정 상세 조회 (비회원도 접근 가능)
     @GetMapping("/{scheduleId}")
     public ResponseEntity<?> getScheduleDetail(
             @PathVariable Long scheduleId,
-            @RequestAttribute("user") User user) {
+            @RequestAttribute(name = "user", required = false) User user) {
 
         ScheduleResponse response = travelScheduleService.getScheduleDetail(scheduleId, user);
         return ResponseEntity.ok(new ApiResponse<>(200, "일정 상세 조회에 성공하였습니다.", response));
     }
 
-    //일정 목록 조회
+
+    // 일정 목록 조회 (비회원도 접근 가능)
     @GetMapping
     public ResponseEntity<?> getScheduleList(
-            @RequestAttribute("user") User user,
             @PageableDefault(size = 10) Pageable pageable) {
 
-        PageResponse<ScheduleListResponse> response = travelScheduleService.getScheduleList(user, pageable);
+        PageResponse<ScheduleListResponse> response = travelScheduleService.getScheduleList(pageable);
         return ResponseEntity.ok(new ApiResponse<>(200, "일정 목록 조회에 성공하였습니다.", response));
     }
+
 
 }
