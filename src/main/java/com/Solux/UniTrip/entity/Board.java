@@ -73,4 +73,11 @@ public class Board {
             this.createdAt = LocalDateTime.now();
         }
     }
+
+    public void updateCommonFields(String title, String content, PostCategory category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
+
 }

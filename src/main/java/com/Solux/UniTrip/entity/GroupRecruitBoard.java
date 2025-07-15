@@ -31,4 +31,9 @@ public class GroupRecruitBoard {
         this.overnightFlag = overnightFlag;
         this.recruitmentCnt = recruitmentCnt;
     }
+
+    public void updateRecruitFields(Boolean overnightFlag, Integer recruitmentCnt) {
+        this.overnightFlag = overnightFlag;
+        this.recruitmentCnt = recruitmentCnt;
+    }
 }

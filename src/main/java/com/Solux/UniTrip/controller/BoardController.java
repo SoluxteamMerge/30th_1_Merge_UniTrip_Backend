@@ -47,4 +47,15 @@ public class BoardController {
         BoardItemResponse response = boardService.getBoardById(postId);
         return ResponseEntity.ok(response);
     }
+
+    // 리뷰 수정
+    @PatchMapping("/{postId}")
+    public ResponseEntity<BoardResponse> updateBoard(
+            @PathVariable Long postId,
+            @RequestBody BoardRequest request,
+            @AuthenticationPrincipal User user) {
+        BoardResponse response = boardService.updateBoard(postId, request, user);
+        return ResponseEntity.ok(response);
+    }
+
 }
