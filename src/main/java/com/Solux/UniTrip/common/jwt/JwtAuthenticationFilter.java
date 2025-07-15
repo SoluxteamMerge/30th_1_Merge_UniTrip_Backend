@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // SecurityContext에 인증 정보 저장
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        email,
+                        user,
                         null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER"))
                 );
