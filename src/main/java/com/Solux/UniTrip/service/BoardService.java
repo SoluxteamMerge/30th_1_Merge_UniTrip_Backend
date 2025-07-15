@@ -30,35 +30,47 @@ public class BoardService {
             throw new RuntimeException("User cannot be null");
         }
 
-        BoardType boardType = BoardType.valueOf(request.getBoardType()); // enum 사용
+        if (request.getBoardType() == null || request.getBoardType().trim().isEmpty()) {
+            throw new RuntimeException("BoardType must not be empty");
+        }
 
-        // categoryName을 enum 없이 문자열로 찾기
+        BoardType boardType;
+        try {
+            boardType = BoardType.valueOf(request.getBoardType());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid BoardType: " + request.getBoardType());
+        }
+
         String categoryName = request.getCategoryName();
-
-        // categoryName이 비어있으면 저장 안 함
         if (categoryName == null || categoryName.trim().isEmpty()) {
             throw new RuntimeException("Category name must not be empty");
         }
 
-        // boardType과 categoryName으로 카테고리 찾기
+        // boardType이 "모임구인"이면 추가 필드 검증
+        if (boardType == BoardType.모임구인) {
+            if (request.getOvernightFlag() == null) {
+                throw new RuntimeException("overnightFlag must not be null for 모임구인 type");
+            }
+            if (request.getRecruitmentCnt() == null) {
+                throw new RuntimeException("recruitmentCnt must not be null for 모임구인 type");
+            }
+        }
+
+        // DB 조회
         PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(boardType, categoryName)
                 .orElseGet(() -> {
-                    // category가 없으면 새로 생성 후 저장
                     PostCategory newCategory = new PostCategory();
                     newCategory.setBoardType(boardType);
                     newCategory.setCategoryName(categoryName);
                     return categoryRepository.save(newCategory);
                 });
 
-        // Board 생성
+        // Board 생성 및 저장
         Board board = new Board(request, user, category);
         Board savedBoard = boardRepository.save(board);
 
-        // boardType이 "모임구인"이면 GroupRecruitBoard 저장
+        // 모임구인 추가 정보 저장
         if (boardType == BoardType.모임구인) {
-            if (request.getOvernightFlag() == null || request.getRecruitmentCnt() == null) {
-                throw new RuntimeException("overnightFlag and recruitmentCnt must not be null for 모임구인 type");
-            }
             GroupRecruitBoard groupRecruitBoard = new GroupRecruitBoard(
                     savedBoard,
                     request.getOvernightFlag(),
