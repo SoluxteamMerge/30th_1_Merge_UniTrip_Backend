@@ -23,4 +23,6 @@ public class BoardItemResponse {
     private boolean isLiked;
     private boolean isScraped;
     private String thumbnailUrl;
+    private Boolean overnightFlag;
+    private Integer recruitmentCnt;
 }
