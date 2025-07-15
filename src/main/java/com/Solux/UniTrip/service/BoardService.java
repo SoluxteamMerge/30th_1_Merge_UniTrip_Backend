@@ -98,7 +98,7 @@ public class BoardService {
     }
 
     private BoardItemResponse convertToBoardItemResponse(Board board) {
-        return BoardItemResponse.builder()
+        BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
                 .categoryName(board.getCategory().getCategoryName())
@@ -112,7 +112,16 @@ public class BoardService {
                 .scrapCount(0)
                 .isLiked(false)
                 .isScraped(false)
-                .thumbnailUrl("")
-                .build();
+                .thumbnailUrl("");
+
+        if (BoardType.모임구인.equals(board.getBoardType())) {
+            groupRecruitBoardRepository.findById(board.getPostId())
+                    .ifPresent(groupRecruit -> {
+                        builder.overnightFlag(groupRecruit.getOvernightFlag());
+                        builder.recruitmentCnt(groupRecruit.getRecruitmentCnt());
+                    });
+        }
+
+        return builder.build();
     }
 }
