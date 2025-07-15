@@ -58,4 +58,12 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    // 리뷰 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<BoardResponse> deleteBoard(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal User user) {
+        BoardResponse response = boardService.deleteBoard(postId, user);
+        return ResponseEntity.ok(response);
+    }
 }

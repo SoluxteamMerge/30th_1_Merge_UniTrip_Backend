@@ -157,4 +157,21 @@ public class BoardService {
         // 5. 응답 DTO로 변환
         return new BoardResponse(200, postId, "리뷰가 성공적으로 수정되었습니다.");
     }
+
+    public BoardResponse deleteBoard(Long postId, User user) {
+        // 1. 기존 게시글 조회
+        Board board = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        // 2. 작성자인지 확인
+        if (user == null)
+            throw new RuntimeException("User cannot be null");
+
+        if (!board.getUser().getUserId().equals(user.getUserId()))
+            throw new SecurityException("수정 권한이 없습니다.");
+
+        // 3. 게시글 삭제
+        boardRepository.delete(board);
+
+        return new BoardResponse(200, postId, "리뷰가 성공적으로 삭제되었습니다.");
+    }
 }
