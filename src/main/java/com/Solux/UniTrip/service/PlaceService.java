@@ -2,7 +2,16 @@ package com.Solux.UniTrip.service;
 //실제 카카오맵 서비스 api를 호출해서 장소 검색 결과를 받아오는 서비스
 //받아온 Json 데이터를 placesearchresponse 객체 리스트로 변환해서 컨트롤러에 넘겨줌
 
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
+import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.PlaceResponse;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
+import com.Solux.UniTrip.entity.Board;
+import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.BoardRepository;
+import com.Solux.UniTrip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,15 +22,21 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PlaceService {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
+
     @Value("${kakao.rest-api-key}")
     private String kakaoApikey;
 
     //장소 검색 메서드
-    public List<PlaceResponse> searchPlaces(String keyword, String accessToken) {
+    public List<PlaceResponse> registerPlaces(String keyword, String accessToken) {
 
         //String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
         String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=" + keyword;
@@ -63,4 +78,7 @@ public class PlaceService {
         //완성된 장소 리스트 반환
         return results;
     }
+
+
+
 }
