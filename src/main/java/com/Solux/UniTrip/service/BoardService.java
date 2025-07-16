@@ -12,6 +12,7 @@ import com.Solux.UniTrip.entity.User;
 import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -109,10 +110,15 @@ public class BoardService {
                 .createdAt(board.getCreatedAt().toString())
                 .commentCount(0)
                 .likes(board.getLikes())
-                .scrapCount(0)
+                .scraps(0)
                 .isLiked(false)
                 .isScraped(false)
-                .thumbnailUrl("");
+                .thumbnailUrl("")
+                .placeName(board.getPlaceName())
+                .roadAddress(board.getRoadAddress())
+                .kakaoPlaceId(board.getKakaoPlaceId())
+                .latitude(board.getLatitude())
+                .longitude(board.getLongitude());
 
         if (BoardType.모임구인.equals(board.getBoardType())) {
             groupRecruitBoardRepository.findById(board.getPostId())

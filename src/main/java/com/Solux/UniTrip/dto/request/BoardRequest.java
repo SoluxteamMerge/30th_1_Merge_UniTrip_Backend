@@ -1,5 +1,6 @@
 package com.Solux.UniTrip.dto.request;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 
 @Getter
@@ -8,6 +9,7 @@ public class BoardRequest {
     private String categoryName;
     private String title;
     private String content;
+    private String thumbnailUrl;
 
     private String placeName;
     private String roadAddress;
@@ -17,4 +19,5 @@ public class BoardRequest {
 
     private Boolean overnightFlag;
     private Integer recruitmentCnt;
+
 }
