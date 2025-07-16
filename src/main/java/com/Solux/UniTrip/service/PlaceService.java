@@ -2,12 +2,7 @@ package com.Solux.UniTrip.service;
 //실제 카카오맵 서비스 api를 호출해서 장소 검색 결과를 받아오는 서비스
 //받아온 Json 데이터를 placesearchresponse 객체 리스트로 변환해서 컨트롤러에 넘겨줌
 
-import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
-import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
-import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
-import com.Solux.UniTrip.dto.response.PlaceSearchResponse;
-import com.Solux.UniTrip.entity.User;
-import com.Solux.UniTrip.repository.UserRepository;
+import com.Solux.UniTrip.dto.response.PlaceResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,19 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PlaceSearchService {
+public class PlaceService {
     @Value("${kakao.rest-api-key}")
     private String kakaoApikey;
 
     //장소 검색 메서드
-    public List<PlaceSearchResponse> searchPlaces(String keyword, String accessToken) {
+    public List<PlaceResponse> searchPlaces(String keyword, String accessToken) {
 
         //String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
         String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=" + keyword;
@@ -52,13 +45,13 @@ public class PlaceSearchService {
         JSONArray documents = json.getJSONArray("documents");
 
         //결과를 담을 리스트 생성
-        List<PlaceSearchResponse> results = new ArrayList<>();
+        List<PlaceResponse> results = new ArrayList<>();
 
         //JSON 배열 순회하면서 PlaceSearchResponse 객체 생성 후 리스트에 추가
         for (int i = 0; i < documents.length(); i++) {
             JSONObject obj = documents.getJSONObject(i);
 
-            PlaceSearchResponse place = PlaceSearchResponse.builder()
+            PlaceResponse place = PlaceResponse.builder()
                     .placeName(obj.getString("place_name"))
                     .address(obj.getString("address_name"))
                     .kakaoId(Integer.parseInt(obj.getString("id")))
