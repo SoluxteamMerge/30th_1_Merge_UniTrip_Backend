@@ -44,11 +44,28 @@ public class Board {
     @Column(nullable = false)
     private int likes;
 
+    @Column(nullable = false)
+    private int scraps;
+
+    @Column(nullable = false)
+    private int commentCount;
+
+    private String thumbnailUrl;
+
     // 여행 모집용 필드
+    @Column(nullable = false)
     private String placeName;
+
+    @Column(nullable = false)
     private String roadAddress;
+
+    @Column(nullable = false)
     private String kakaoPlaceId;
+
+    @Column(nullable = false)
     private Double latitude;
+
+    @Column(nullable = false)
     private Double longitude;
 
     public Board(BoardRequest request, User user, PostCategory category) {
@@ -61,10 +78,18 @@ public class Board {
         this.kakaoPlaceId = request.getKakaoPlaceId();
         this.latitude = request.getLatitude();
         this.longitude = request.getLongitude();
+        this.thumbnailUrl = request.getThumbnailUrl();
         this.user = user;
         this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
         this.views = 0;
         this.likes = 0;
+        this.scraps = 0;
+        this.commentCount = 0;
+        this.placeName = request.getPlaceName();
+        this.roadAddress = request.getRoadAddress();
+        this.kakaoPlaceId = request.getKakaoPlaceId();
+        this.latitude = request.getLatitude();
+        this.longitude = request.getLongitude();
     }
 
     @PrePersist
