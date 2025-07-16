@@ -18,7 +18,7 @@ public class ReviewResultResponse {
 
     public static ReviewResultResponse from(Board board) {
         return ReviewResultResponse.builder()
-                //.thumbnailUrl(board.getThumbnailUrl())
+                //.thumbnailUrl(board.getT())
                 .nickname(board.getUser().getNickname())
                 .postId(board.getPostId())
                 .postTitle(board.getTitle())

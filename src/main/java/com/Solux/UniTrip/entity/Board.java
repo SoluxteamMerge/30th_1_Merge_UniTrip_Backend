@@ -53,7 +53,7 @@ public class Board {
     private String thumbnailUrl;
 
     // 여행 모집용 필드
-    @Column(nullable = false)
+    @Column(nullable = false, name = "place_name")
     private String placeName;
 
     @Column(nullable = false)
