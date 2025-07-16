@@ -23,7 +23,13 @@ public enum FailureStatus implements Basecode {
     SCHEDULE_NOT_FOUND(404, "해당 일정을 찾을 수 없습니다."),
     _PROFILE_ALREADY_REGISTERED(409, "이미 프로필 등록을 하셨습니다."),
     _PROFILE_NOT_REGISTERED(400, "아직 프로필 정보가 등록되지 않았습니다."),
-    _INVALID_USER_TYPE(400, "UserType 이 유효하지 않습니다.");
+    _INVALID_USER_TYPE(400, "UserType 이 유효하지 않습니다."),
+    INVALID_EMAIL_DOMAIN(400, "올바른 학교 이메일이 아닙니다."),
+    EMAIL_SEND_FAILED(500,  "인증 메일 전송에 실패했습니다."),
+    VERIFICATION_NOT_FOUND(400,  "인증 요청이 없습니다."),
+    VERIFICATION_EXPIRED(400,  "인증 코드가 만료되었습니다."),
+    VERIFICATION_CODE_MISMATCH(400,  "인증 코드가 일치하지 않습니다.");
+
 
     private final int code;
     private final String message;

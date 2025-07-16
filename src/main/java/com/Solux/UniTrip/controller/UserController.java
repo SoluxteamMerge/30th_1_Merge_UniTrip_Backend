@@ -3,6 +3,8 @@ package com.Solux.UniTrip.controller;
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
+import com.Solux.UniTrip.dto.request.EmailRequest;
+import com.Solux.UniTrip.dto.request.EmailVerifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
 import com.Solux.UniTrip.dto.response.ReviewResultResponse;
@@ -114,4 +116,20 @@ public class UserController {
         userService.deleteUser(accessToken);
         return ApiResponse.onSuccess(null, SuccessStatus._USER_DELETED);
     }
+
+    // 이메일 인증 코드 전송
+    @PostMapping("/email")
+    public ApiResponse<Void> sendVerificationEmail(@Valid @RequestBody EmailRequest request) {
+        userService.sendVerificationEmail(request.getEmail());
+        return ApiResponse.onSuccess(null, SuccessStatus._EMAIL_SENT_SUCCESS);
+    }
+
+    // 이메일 인증 코드 검증
+    @PostMapping("/email/verify")
+    public ApiResponse<Void> verifyEmailCode(@Valid @RequestBody EmailVerifyRequest request) {
+        userService.verifyEmailCode(request.getEmail(), request.getCode());
+        return ApiResponse.onSuccess(null, SuccessStatus._EMAIL_VERIFIED_SUCCESS);
+    }
+
+
 }
