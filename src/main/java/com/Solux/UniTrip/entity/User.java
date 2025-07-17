@@ -69,4 +69,8 @@ public class User {
         this.emailVerified = emailVerified;
     }
 
+    public void updateProfileImage(String imageUrl) {
+        this.profileImageUrl = imageUrl;
+    }
+
 }
