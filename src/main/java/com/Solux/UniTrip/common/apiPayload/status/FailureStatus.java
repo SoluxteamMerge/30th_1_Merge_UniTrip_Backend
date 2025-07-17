@@ -30,7 +30,8 @@ public enum FailureStatus implements Basecode {
     VERIFICATION_EXPIRED(400,  "인증 코드가 만료되었습니다."),
     VERIFICATION_CODE_MISMATCH(400,  "인증 코드가 일치하지 않습니다."),
     _PROFILEIMAGE_UPLOAD_FAILURE(500, "프로필 이미지 업로드에 실패하였습니다."),
-    _PROFILEIMAGE_NOT_FOUND(400, "삭제할 프로필 사진이 없습니다.");
+    _PROFILEIMAGE_NOT_FOUND(400, "삭제할 프로필 사진이 없습니다."),
+    SCHEDULE_OVERLAP(409, "해당 기간에 이미 등록된 일정이 존재합니다.");
 
 
     private final int code;
