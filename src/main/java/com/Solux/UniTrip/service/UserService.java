@@ -1,10 +1,12 @@
 package com.Solux.UniTrip.service;
 
 import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.exception.UploadFailureExpection;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ProfileImageResponse;
 import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
@@ -19,6 +21,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -36,6 +39,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ScrapRepository scrapRepository;
     private final JavaMailSender mailSender;
+    private final S3Uploader s3Uploader;
 
     //회원 탈퇴
     public void deleteUser(String token) {
@@ -238,6 +242,46 @@ public class UserService {
         public VerificationInfo(String code, LocalDateTime createdAt) {
             this.code = code;
             this.createdAt = createdAt;
+        }
+    }
+
+    // 프로필 사진 업로드
+    @Transactional
+    public ProfileImageResponse uploadProfileImage(String token, MultipartFile imagefile) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        // S3 에 이미지 업로드
+        String imageUrl = s3Uploader.uploadFile(imagefile, "profile");
+
+        // 사용자 프로필 이미지 url 저장
+        user.updateProfileImage(imageUrl);
+        userRepository.save(user);
+
+        return new ProfileImageResponse(imageUrl);
+    }
+
+    //프로필 사진 삭제
+    @Transactional
+    public void deleteProfileImage(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        String imageUrl = user.getProfileImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            s3Uploader.deleteFile(imageUrl);
+
+            // DB에서 프로필 이미지 URL 삭제
+            user.updateProfileImage(null);
+            userRepository.save(user);
+        } else {
+            throw new UploadFailureExpection(FailureStatus._PROFILEIMAGE_NOT_FOUND);
         }
     }
 

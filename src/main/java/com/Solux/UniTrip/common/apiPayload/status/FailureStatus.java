@@ -28,7 +28,9 @@ public enum FailureStatus implements Basecode {
     EMAIL_SEND_FAILED(500,  "인증 메일 전송에 실패했습니다."),
     VERIFICATION_NOT_FOUND(400,  "인증 요청이 없습니다."),
     VERIFICATION_EXPIRED(400,  "인증 코드가 만료되었습니다."),
-    VERIFICATION_CODE_MISMATCH(400,  "인증 코드가 일치하지 않습니다.");
+    VERIFICATION_CODE_MISMATCH(400,  "인증 코드가 일치하지 않습니다."),
+    _PROFILEIMAGE_UPLOAD_FAILURE(500, "프로필 이미지 업로드에 실패하였습니다."),
+    _PROFILEIMAGE_NOT_FOUND(400, "삭제할 프로필 사진이 없습니다.");
 
 
     private final int code;

@@ -7,6 +7,7 @@ import com.Solux.UniTrip.dto.request.EmailRequest;
 import com.Solux.UniTrip.dto.request.EmailVerifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
+import com.Solux.UniTrip.dto.response.ProfileImageResponse;
 import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.dto.response.ScrapResponse;
 import com.Solux.UniTrip.dto.response.UserInfoResponse;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -129,6 +131,25 @@ public class UserController {
     public ApiResponse<Void> verifyEmailCode(@Valid @RequestBody EmailVerifyRequest request) {
         userService.verifyEmailCode(request.getEmail(), request.getCode());
         return ApiResponse.onSuccess(null, SuccessStatus._EMAIL_VERIFIED_SUCCESS);
+    }
+
+    // 프로필 이미지 업로드
+    @PostMapping("profileImage")
+    public ApiResponse<ProfileImageResponse> uploadProfileImage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("image") MultipartFile imagefile
+    ) {
+        ProfileImageResponse profileImageUrl = userService.uploadProfileImage(token, imagefile);
+        return ApiResponse.onSuccess(profileImageUrl, SuccessStatus._PROFILEIMAGE_UPLOAD_SUCCESS);
+    }
+
+    // 프로필 이미지 삭제
+    @DeleteMapping("profileImage")
+    public ApiResponse<?> deleteProfileImage(
+            @RequestHeader("Authorization") String token
+    ){
+        userService.deleteProfileImage(token);
+        return ApiResponse.onSuccess(null, SuccessStatus._PROFILEIMAGE_DELETE_SUCCESS);
     }
 
 
