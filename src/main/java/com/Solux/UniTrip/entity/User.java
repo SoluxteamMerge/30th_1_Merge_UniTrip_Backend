@@ -73,4 +73,9 @@ public class User {
         this.profileImageUrl = imageUrl;
     }
 
+    public void verifyEmail() {
+        this.emailVerified = true;
+    }
+
+
 }

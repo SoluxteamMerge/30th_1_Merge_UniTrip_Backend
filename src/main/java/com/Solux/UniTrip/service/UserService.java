@@ -225,8 +225,15 @@ public class UserService {
             throw new BaseException(FailureStatus.VERIFICATION_CODE_MISMATCH);
         }
 
-        // 성공 → 필요 시 User 엔티티에 인증 상태 저장
+        // 인증 성공 처리
         verificationStorage.remove(email);
+
+        // 이메일 인증된 사용자 처리
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        user.verifyEmail();
+        userRepository.save(user);
     }
 
     //인증 코드 생성
