@@ -39,6 +39,16 @@ public class SecurityConfig {
                                 "/api/reviews"
                         ).authenticated()
 
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/reviews/**"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/reviews/**"
+                        ).authenticated()
+
                         //보호경로
                         .requestMatchers(
                                 "/api/comments/**",

@@ -53,6 +53,25 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    // 리뷰 수정
+    @PatchMapping("/{postId}")
+    public ResponseEntity<BoardResponse> updateBoard(
+            @PathVariable Long postId,
+            @RequestBody BoardRequest request,
+            @AuthenticationPrincipal User user) {
+        BoardResponse response = boardService.updateBoard(postId, request, user);
+        return ResponseEntity.ok(response);
+    }
+
+    // 리뷰 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<BoardResponse> deleteBoard(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal User user) {
+        BoardResponse response = boardService.deleteBoard(postId, user);
+        return ResponseEntity.ok(response);
+    }
+    
     // 리뷰 검색
     @GetMapping("/search")
     public ApiResponse<List<ReviewResultResponse>> searchResults(
@@ -62,4 +81,5 @@ public class BoardController {
         List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
+
 }
