@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,8 +26,8 @@ public class S3Uploader {
 
     private final AmazonS3 amazonS3;
 
-    //이미지 업로드
-    public String uploadFile(MultipartFile file, String folder) {
+    //프로필 이미지 업로드
+    public String uploadProfileImage(MultipartFile file, String folder) {
         String fileName = folder + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
         try {
@@ -40,6 +42,21 @@ public class S3Uploader {
             throw new UploadFailureExpection(FailureStatus._PROFILEIMAGE_UPLOAD_FAILURE);
         }
     }
+
+    //리뷰 사진 업로드(여러 장)
+    public List<String> uploadReviewImages(List<MultipartFile> files, String folder) {
+        List<String> fileUrls = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            //업로드 로직은 프로필 사진 업로드 재사용
+            if (!file.isEmpty()) {
+                String fileUrl = uploadProfileImage(file, folder);
+                fileUrls.add(fileUrl);
+            }
+        }
+        return fileUrls;
+    }
+
 
     //이미지 삭제
     public void deleteFile(String fileUrl) {

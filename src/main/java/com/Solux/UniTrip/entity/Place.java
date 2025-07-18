@@ -3,6 +3,8 @@ package com.Solux.UniTrip.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.swing.plaf.synth.Region;
+
 @Entity
 @Table(name = "place")
 @Getter
@@ -16,10 +18,10 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long placeId;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String placeName;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
@@ -28,12 +30,12 @@ public class Place {
     @Column(nullable = false)
     private float lng;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String kakaoId;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String categoryGroupCode;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String categoryGroupName;
 }

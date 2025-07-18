@@ -15,6 +15,7 @@ public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
     private Long imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,19 +26,20 @@ public class Image {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false, length = 255)
-    private String originalName;
-
-    @Column(nullable = false, length = 255)
+    @Column(name= "image_url",nullable = false, length = 255)
     private String imageUrl;
 
-    @Column(nullable = false, length = 255)
-    private String storedName;
-
-    @Column(nullable = false)
+    @Column(name = "created_at",nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private int imageOrder;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Image(Board board, String imageUrl) {
+        this.board = board;
+        this.imageUrl = imageUrl;
+    }
 }
 

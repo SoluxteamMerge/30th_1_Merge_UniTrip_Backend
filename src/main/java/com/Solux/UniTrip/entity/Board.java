@@ -4,6 +4,9 @@ import com.Solux.UniTrip.dto.request.BoardRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "board")
@@ -50,7 +53,9 @@ public class Board {
     @Column(nullable = false)
     private int commentCount;
 
-    private String thumbnailUrl;
+    //Image 엔티티 매핑
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
     // 여행 모집용 필드
     @Column(nullable = false, name = "place_name")
@@ -68,7 +73,7 @@ public class Board {
     @Column(nullable = false)
     private Double longitude;
 
-    public Board(BoardRequest request, User user, PostCategory category) {
+    public Board(BoardRequest request, User user, PostCategory category, List<Image> images) {
         this.boardType = BoardType.valueOf(request.getBoardType());
         this.category = category;
         this.title = request.getTitle();
@@ -78,7 +83,6 @@ public class Board {
         this.kakaoPlaceId = request.getKakaoPlaceId();
         this.latitude = request.getLatitude();
         this.longitude = request.getLongitude();
-        this.thumbnailUrl = request.getThumbnailUrl();
         this.user = user;
         this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
         this.views = 0;
@@ -90,6 +94,12 @@ public class Board {
         this.kakaoPlaceId = request.getKakaoPlaceId();
         this.latitude = request.getLatitude();
         this.longitude = request.getLongitude();
+        this.images = new ArrayList<>();
+
+        for (Image image : images) {
+            image.setBoard(this);
+            this.images.add(image);
+        }
     }
 
     @PrePersist
@@ -98,7 +108,6 @@ public class Board {
             this.createdAt = LocalDateTime.now();
         }
     }
-
     public void updateCommonFields(String title, String content, PostCategory category) {
         this.title = title;
         this.content = content;

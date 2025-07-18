@@ -10,10 +10,12 @@ import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.Solux.UniTrip.entity.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,11 +26,13 @@ public class BoardController {
     private final BoardService boardService;
 
     // 리뷰 작성
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BoardResponse> createBoard(
-            @RequestBody BoardRequest request,
-            @AuthenticationPrincipal User user) {
-        BoardResponse response = boardService.createBoard(request, user);
+            @RequestPart BoardRequest request,
+            @AuthenticationPrincipal User user,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+            ) {
+        BoardResponse response = boardService.createBoard(request, user, images);
         return ResponseEntity.ok(response);
     }
 
