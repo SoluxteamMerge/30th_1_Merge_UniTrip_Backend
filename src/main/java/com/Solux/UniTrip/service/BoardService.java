@@ -1,9 +1,13 @@
 package com.Solux.UniTrip.service;
 
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.BoardItemResponse;
 import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.GroupRecruitBoard;
@@ -14,10 +18,17 @@ import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
 import jakarta.transaction.Transactional;
+import com.Solux.UniTrip.repository.UserRepository;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +37,9 @@ public class BoardService {
     private final PostCategoryRepository categoryRepository;
     private final GroupRecruitBoardRepository groupRecruitBoardRepository;
     private final BoardLikesRepository boardLikesRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PostCategoryRepository postCategoryRepository;
 
     public BoardResponse createBoard(BoardRequest request, User user) {
         if (user == null) {
@@ -127,7 +141,38 @@ public class BoardService {
                 .isLiked(isLiked)
                 .isScraped(false)
                 .thumbnailUrl("")
-                .build();
+                .placeName(board.getPlaceName())
+                .roadAddress(board.getRoadAddress())
+                .kakaoPlaceId(board.getKakaoPlaceId())
+                .latitude(board.getLatitude())
+                .longitude(board.getLongitude());
+
+        if (BoardType.모임구인.equals(board.getBoardType())) {
+            groupRecruitBoardRepository.findById(board.getPostId())
+                    .ifPresent(groupRecruit -> {
+                        builder.overnightFlag(groupRecruit.getOvernightFlag());
+                        builder.recruitmentCnt(groupRecruit.getRecruitmentCnt());
+                    });
+        }
+
+        return builder.build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewResultResponse> searchResults(String keyword, String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        String processedKeyword = "%" + keyword.trim().toLowerCase() + "%";
+
+        List<Board> boards = boardRepository.searchByKeyword(keyword);
+
+        return boards.stream()
+                .map(ReviewResultResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional

@@ -1,9 +1,12 @@
 package com.Solux.UniTrip.controller;
 
+import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.BoardItemResponse;
 import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.Solux.UniTrip.entity.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -67,4 +72,15 @@ public class BoardController {
         BoardResponse response = boardService.deleteBoard(postId, user);
         return ResponseEntity.ok(response);
     }
+    
+    // 리뷰 검색
+    @GetMapping("/search")
+    public ApiResponse<List<ReviewResultResponse>> searchResults(
+            @RequestHeader ("Authorization") String token,
+            @RequestParam String keyword
+    ) {
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
+        return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
+    }
+
 }
