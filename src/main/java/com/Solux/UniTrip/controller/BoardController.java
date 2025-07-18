@@ -1,9 +1,12 @@
 package com.Solux.UniTrip.controller;
 
+import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.BoardItemResponse;
 import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.Solux.UniTrip.entity.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -29,22 +34,23 @@ public class BoardController {
 
     // 리뷰 조회(청춘카드)
     @GetMapping
-    public ResponseEntity<BoardListResponse> getAllReviews() {
-        BoardListResponse response = boardService.getAllCard();
+    public ResponseEntity<BoardListResponse> getAllReviews(@AuthenticationPrincipal User user) {
+        System.out.println("user: "+user);
+        BoardListResponse response = boardService.getAllCard(user);
         return ResponseEntity.ok(response);
     }
 
     // 리뷰 조회(게시판별)
     @GetMapping(params = "boardType")
-    public ResponseEntity<BoardListResponse> getBoardsByType(@RequestParam BoardType boardType) {
-        BoardListResponse response = boardService.getCardsByBoardType(boardType);
+    public ResponseEntity<BoardListResponse> getBoardsByType(@RequestParam BoardType boardType, @AuthenticationPrincipal User user) {
+        BoardListResponse response = boardService.getCardsByBoardType(boardType, user);
         return ResponseEntity.ok(response);
     }
 
     // 리뷰 상세 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId) {
-        BoardItemResponse response = boardService.getBoardById(postId);
+    public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId, @AuthenticationPrincipal User user) {
+        BoardItemResponse response = boardService.getBoardById(postId, user);
         return ResponseEntity.ok(response);
     }
 
@@ -66,4 +72,15 @@ public class BoardController {
         BoardResponse response = boardService.deleteBoard(postId, user);
         return ResponseEntity.ok(response);
     }
+    
+    // 리뷰 검색
+    @GetMapping("/search")
+    public ApiResponse<List<ReviewResultResponse>> searchResults(
+            @RequestHeader ("Authorization") String token,
+            @RequestParam String keyword
+    ) {
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
+        return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
+    }
+
 }

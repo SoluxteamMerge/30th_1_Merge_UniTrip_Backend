@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface PostCategoryRepository extends JpaRepository<PostCategory, Integer> {
 
     Optional<PostCategory> findByBoardTypeAndCategoryName(BoardType boardType, String categoryName);
+    PostCategory findByCategoryNameIgnoreCase(String categoryName);
 
 }

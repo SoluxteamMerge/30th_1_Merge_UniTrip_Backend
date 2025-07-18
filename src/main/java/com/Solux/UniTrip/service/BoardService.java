@@ -1,22 +1,34 @@
 package com.Solux.UniTrip.service;
 
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.BoardItemResponse;
 import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
+import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.GroupRecruitBoard;
 import com.Solux.UniTrip.entity.PostCategory;
 import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.BoardLikesRepository;
 import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
 import jakarta.transaction.Transactional;
+import com.Solux.UniTrip.repository.UserRepository;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +36,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final PostCategoryRepository categoryRepository;
     private final GroupRecruitBoardRepository groupRecruitBoardRepository;
+    private final BoardLikesRepository boardLikesRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PostCategoryRepository postCategoryRepository;
 
     public BoardResponse createBoard(BoardRequest request, User user) {
         if (user == null) {
@@ -82,26 +98,26 @@ public class BoardService {
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
     }
 
-    public BoardListResponse getAllCard() {
+    public BoardListResponse getAllCard(User user) {
         List<Board> boards = boardRepository.findAll();
-        return convertToBoardListResponse(boards);
+        return convertToBoardListResponse(boards, user);
     }
 
-    public BoardListResponse getCardsByBoardType(BoardType boardType) {
+    public BoardListResponse getCardsByBoardType(BoardType boardType, User user) {
         List<Board> boards = boardRepository.findByBoardType(boardType);
-        return convertToBoardListResponse(boards);
+        return convertToBoardListResponse(boards, user);
     }
 
     // 단건 조회
-    public BoardItemResponse getBoardById(Long postId) {
+    public BoardItemResponse getBoardById(Long postId, User user) {
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return convertToBoardItemResponse(board);
+        return convertToBoardItemResponse(board, user);
     }
 
-    private BoardListResponse convertToBoardListResponse(List<Board> boards) {
+    private BoardListResponse convertToBoardListResponse(List<Board> boards, User user) {
         List<BoardItemResponse> items = boards.stream()
-                .map(this::convertToBoardItemResponse)
+                .map(board -> convertToBoardItemResponse(board, user))
                 .toList();
 
         return BoardListResponse.builder()
@@ -110,7 +126,18 @@ public class BoardService {
                 .build();
     }
 
-    private BoardItemResponse convertToBoardItemResponse(Board board) {
+    private BoardItemResponse convertToBoardItemResponse(Board board, User user) {
+        Long likes = boardLikesRepository.countByBoardAndStatus(board, true);
+
+        // 기본값 false
+        boolean isLiked = false;
+
+        // 로그인한 사용자라면 내가 좋아요 눌렀는지 확인
+        if (user != null)
+            isLiked = boardLikesRepository.findByBoardAndUserAndStatus(board, user, true)
+                    .isPresent();
+
+
         return BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
@@ -121,12 +148,43 @@ public class BoardService {
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())
                 .commentCount(0)
-                .likes(board.getLikes())
+                .likes(likes.intValue())
                 .scrapCount(0)
-                .isLiked(false)
+                .isLiked(isLiked)
                 .isScraped(false)
                 .thumbnailUrl("")
-                .build();
+                .placeName(board.getPlaceName())
+                .roadAddress(board.getRoadAddress())
+                .kakaoPlaceId(board.getKakaoPlaceId())
+                .latitude(board.getLatitude())
+                .longitude(board.getLongitude());
+
+        if (BoardType.모임구인.equals(board.getBoardType())) {
+            groupRecruitBoardRepository.findById(board.getPostId())
+                    .ifPresent(groupRecruit -> {
+                        builder.overnightFlag(groupRecruit.getOvernightFlag());
+                        builder.recruitmentCnt(groupRecruit.getRecruitmentCnt());
+                    });
+        }
+
+        return builder.build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewResultResponse> searchResults(String keyword, String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid Token");
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        String processedKeyword = "%" + keyword.trim().toLowerCase() + "%";
+
+        List<Board> boards = boardRepository.searchByKeyword(keyword);
+
+        return boards.stream()
+                .map(ReviewResultResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional

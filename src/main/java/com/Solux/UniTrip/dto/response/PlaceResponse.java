@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceSearchResponse {
+public class PlaceResponse {
 
     @JsonProperty("place_name")
     private String placeName;

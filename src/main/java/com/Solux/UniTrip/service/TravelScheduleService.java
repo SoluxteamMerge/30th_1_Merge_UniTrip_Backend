@@ -50,6 +50,15 @@ public class TravelScheduleService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
+        // 겹치는 일정이 있는지 확인
+        boolean hasOverlap = !travelScheduleRepository
+                .findOverlappingSchedules(user, startDate, endDate)
+                .isEmpty();
+
+        if (hasOverlap) {
+            throw new BaseException(FailureStatus.SCHEDULE_OVERLAP);
+        }
+
         // 일정 생성
         TravelSchedule schedule = TravelSchedule.builder()
                 .title(req.getTitle())
