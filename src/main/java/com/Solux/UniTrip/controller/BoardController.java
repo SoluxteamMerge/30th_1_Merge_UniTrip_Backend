@@ -34,22 +34,23 @@ public class BoardController {
 
     // 리뷰 조회(청춘카드)
     @GetMapping
-    public ResponseEntity<BoardListResponse> getAllReviews() {
-        BoardListResponse response = boardService.getAllCard();
+    public ResponseEntity<BoardListResponse> getAllReviews(@AuthenticationPrincipal User user) {
+        System.out.println("user: "+user);
+        BoardListResponse response = boardService.getAllCard(user);
         return ResponseEntity.ok(response);
     }
 
     // 리뷰 조회(게시판별)
     @GetMapping(params = "boardType")
-    public ResponseEntity<BoardListResponse> getBoardsByType(@RequestParam BoardType boardType) {
-        BoardListResponse response = boardService.getCardsByBoardType(boardType);
+    public ResponseEntity<BoardListResponse> getBoardsByType(@RequestParam BoardType boardType, @AuthenticationPrincipal User user) {
+        BoardListResponse response = boardService.getCardsByBoardType(boardType, user);
         return ResponseEntity.ok(response);
     }
 
     // 리뷰 상세 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId) {
-        BoardItemResponse response = boardService.getBoardById(postId);
+    public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId, @AuthenticationPrincipal User user) {
+        BoardItemResponse response = boardService.getBoardById(postId, user);
         return ResponseEntity.ok(response);
     }
 

@@ -13,6 +13,7 @@ import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.GroupRecruitBoard;
 import com.Solux.UniTrip.entity.PostCategory;
 import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.BoardLikesRepository;
 import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
 import com.Solux.UniTrip.repository.PostCategoryRepository;
@@ -35,6 +36,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final PostCategoryRepository categoryRepository;
     private final GroupRecruitBoardRepository groupRecruitBoardRepository;
+    private final BoardLikesRepository boardLikesRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
@@ -84,26 +86,26 @@ public class BoardService {
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
     }
 
-    public BoardListResponse getAllCard() {
+    public BoardListResponse getAllCard(User user) {
         List<Board> boards = boardRepository.findAll();
-        return convertToBoardListResponse(boards);
+        return convertToBoardListResponse(boards, user);
     }
 
-    public BoardListResponse getCardsByBoardType(BoardType boardType) {
+    public BoardListResponse getCardsByBoardType(BoardType boardType, User user) {
         List<Board> boards = boardRepository.findByBoardType(boardType);
-        return convertToBoardListResponse(boards);
+        return convertToBoardListResponse(boards, user);
     }
 
     // 단건 조회
-    public BoardItemResponse getBoardById(Long postId) {
+    public BoardItemResponse getBoardById(Long postId, User user) {
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return convertToBoardItemResponse(board);
+        return convertToBoardItemResponse(board, user);
     }
 
-    private BoardListResponse convertToBoardListResponse(List<Board> boards) {
+    private BoardListResponse convertToBoardListResponse(List<Board> boards, User user) {
         List<BoardItemResponse> items = boards.stream()
-                .map(this::convertToBoardItemResponse)
+                .map(board -> convertToBoardItemResponse(board, user))
                 .toList();
 
         return BoardListResponse.builder()
@@ -112,8 +114,19 @@ public class BoardService {
                 .build();
     }
 
-    private BoardItemResponse convertToBoardItemResponse(Board board) {
-        BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
+    private BoardItemResponse convertToBoardItemResponse(Board board, User user) {
+        Long likes = boardLikesRepository.countByBoardAndStatus(board, true);
+
+        // 기본값 false
+        boolean isLiked = false;
+
+        // 로그인한 사용자라면 내가 좋아요 눌렀는지 확인
+        if (user != null)
+            isLiked = boardLikesRepository.findByBoardAndUserAndStatus(board, user, true)
+                    .isPresent();
+
+
+        return BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
                 .categoryName(board.getCategory().getCategoryName())
@@ -123,9 +136,9 @@ public class BoardService {
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())
                 .commentCount(0)
-                .likes(board.getLikes())
-                .scraps(0)
-                .isLiked(false)
+                .likes(likes.intValue())
+                .scrapCount(0)
+                .isLiked(isLiked)
                 .isScraped(false)
                 .thumbnailUrl("")
                 .placeName(board.getPlaceName())
