@@ -4,25 +4,16 @@ import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.BoardRequest;
-import com.Solux.UniTrip.dto.response.BoardItemResponse;
-import com.Solux.UniTrip.dto.response.BoardListResponse;
-import com.Solux.UniTrip.dto.response.BoardResponse;
-import com.Solux.UniTrip.dto.response.ReviewResultResponse;
-import com.Solux.UniTrip.entity.Board;
-import com.Solux.UniTrip.entity.BoardType;
-import com.Solux.UniTrip.entity.GroupRecruitBoard;
-import com.Solux.UniTrip.entity.PostCategory;
-import com.Solux.UniTrip.entity.User;
-import com.Solux.UniTrip.repository.BoardLikesRepository;
-import com.Solux.UniTrip.repository.BoardRepository;
-import com.Solux.UniTrip.repository.GroupRecruitBoardRepository;
-import com.Solux.UniTrip.repository.PostCategoryRepository;
-import jakarta.transaction.Transactional;
-import com.Solux.UniTrip.repository.UserRepository;
+import com.Solux.UniTrip.dto.response.*;
+import com.Solux.UniTrip.entity.*;
+import com.Solux.UniTrip.repository.*;
 import jakarta.persistence.Column;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,8 +31,11 @@ public class BoardService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
+    private final ImageRepository imageRepository;
+    private final S3Uploader s3Uploader;
 
-    public BoardResponse createBoard(BoardRequest request, User user) {
+    @Transactional
+    public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
         if (user == null) {
             throw new RuntimeException("User cannot be null");
         }
@@ -75,15 +69,35 @@ public class BoardService {
         // DB 조회
         PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(boardType, categoryName)
                 .orElseGet(() -> {
+                    // category가 없으면 새로 생성 후 저장
                     PostCategory newCategory = new PostCategory();
                     newCategory.setBoardType(boardType);
                     newCategory.setCategoryName(categoryName);
                     return categoryRepository.save(newCategory);
                 });
 
+        // multipartfile 리스트를 s3에 업로드 하여 url 받기
+        List<Image> images = new ArrayList<>();
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            List<String> imageUrls = s3Uploader.uploadReviewImages(multipartFiles, "board");
+
+            //URL 리스트로 Image 엔티티 리스트 생성 (Board는 아직 없으니 null로 세팅)
+            for (String url : imageUrls) {
+                images.add(new Image(null, url));
+            }
+        }
+
         // Board 생성 및 저장
-        Board board = new Board(request, user, category);
+        Board board = new Board(request, user, category, images);
         Board savedBoard = boardRepository.save(board);
+
+        //image 엔티티에 저장 후 한꺼번에 저장
+        for (Image image : images) {
+            image.setBoard(savedBoard);
+        }
+        if (!images.isEmpty()) {
+            imageRepository.saveAll(images);
+        }
 
         // 모임구인 추가 정보 저장
         if (boardType == BoardType.모임구인) {
@@ -115,6 +129,7 @@ public class BoardService {
         return convertToBoardItemResponse(board, user);
     }
 
+
     private BoardListResponse convertToBoardListResponse(List<Board> boards, User user) {
         List<BoardItemResponse> items = boards.stream()
                 .map(board -> convertToBoardItemResponse(board, user))
@@ -138,7 +153,7 @@ public class BoardService {
                     .isPresent();
 
 
-        return BoardItemResponse.builder()
+        BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
                 .categoryName(board.getCategory().getCategoryName())
@@ -152,7 +167,7 @@ public class BoardService {
                 .scrapCount(0)
                 .isLiked(isLiked)
                 .isScraped(false)
-                .thumbnailUrl("")
+                .imageUrl("")
                 .placeName(board.getPlaceName())
                 .roadAddress(board.getRoadAddress())
                 .kakaoPlaceId(board.getKakaoPlaceId())
@@ -170,6 +185,7 @@ public class BoardService {
         return builder.build();
     }
 
+    //인기 키워드 검색 및 리뷰 검색
     @Transactional(readOnly = true)
     public List<ReviewResultResponse> searchResults(String keyword, String token) {
         if (!jwtTokenProvider.validateToken(token)) {
@@ -188,7 +204,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponse updateBoard(Long postId, BoardRequest request, User user) {
+    public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
         // 1. 기존 게시글 조회
         Board board = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
@@ -221,6 +237,28 @@ public class BoardService {
             );
         }
 
+        // 원래 이미지 삭제
+        List<Image> existingImages = board.getImages();
+        for (Image image : existingImages) {
+            String imageUrl = image.getImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                s3Uploader.deleteFile(imageUrl); // S3에서 삭제
+            }
+        }
+        board.getImages().clear();
+
+        // 새 이미지 업로드
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            List<String> imageUrls = s3Uploader.uploadReviewImages(multipartFiles, "board");
+
+            List<Image> newImages = new ArrayList<>();
+            for (String url : imageUrls) {
+                newImages.add(new Image(board, url));
+            }
+
+            board.getImages().addAll(newImages);
+        }
+
         // 4. 수정된 게시글을 저장 (JPA에서는 트랜잭션 끝나면 자동 반영)
         // boardRepository.save(board); // 필요없음.
 
@@ -239,9 +277,19 @@ public class BoardService {
         if (!board.getUser().getUserId().equals(user.getUserId()))
             throw new SecurityException("수정 권한이 없습니다.");
 
+        // s3에서 삭제
+        List<Image> images = board.getImages();
+        for (Image image : images) {
+            String imageUrl = image.getImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                s3Uploader.deleteFile(imageUrl);
+            }
+        }
+
         // 3. 게시글 삭제
         boardRepository.delete(board);
 
         return new BoardResponse(200, postId, "리뷰가 성공적으로 삭제되었습니다.");
     }
+
 }

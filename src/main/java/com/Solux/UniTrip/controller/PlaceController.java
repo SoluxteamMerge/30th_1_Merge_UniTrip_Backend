@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/place/")
+@RequestMapping("/api/place")
 public class PlaceController {
 
     private final PlaceService placeService;
@@ -21,7 +21,7 @@ public class PlaceController {
     ///api/place 로 들어오는 요청 처리
     //RequestParam은 요청으로 들어오는 쿼리 파라미터를 받음
     //결과는 PlaceSearchResponse 의 List 형태로 반환
-    @GetMapping
+    @GetMapping()
     public List<PlaceResponse> registerPlaces(
             @RequestParam String keyword,
             @RequestHeader("Authorization") String token

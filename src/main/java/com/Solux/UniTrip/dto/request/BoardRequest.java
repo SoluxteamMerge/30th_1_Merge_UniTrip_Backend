@@ -9,7 +9,7 @@ public class BoardRequest {
     private String categoryName;
     private String title;
     private String content;
-    private String thumbnailUrl;
+    private String imageUrl;
 
     private String placeName;
     private String roadAddress;

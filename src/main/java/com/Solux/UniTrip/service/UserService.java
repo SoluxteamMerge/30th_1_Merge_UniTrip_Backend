@@ -262,7 +262,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
         // S3 에 이미지 업로드
-        String imageUrl = s3Uploader.uploadFile(imagefile, "profile");
+        String imageUrl = s3Uploader.uploadProfileImage(imagefile, "profile");
 
         // 사용자 프로필 이미지 url 저장
         user.updateProfileImage(imageUrl);

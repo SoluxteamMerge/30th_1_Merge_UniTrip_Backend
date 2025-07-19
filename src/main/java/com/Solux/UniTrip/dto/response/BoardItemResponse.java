@@ -23,7 +23,7 @@ public class BoardItemResponse {
     private int scraps;
     private boolean isLiked;
     private boolean isScraped;
-    private String thumbnailUrl;
+    private String imageUrl;
     private Boolean overnightFlag;
     private Integer recruitmentCnt;
     private String placeName;
@@ -31,4 +31,5 @@ public class BoardItemResponse {
     private String kakaoPlaceId;
     private Double latitude;
     private Double longitude;
+    private int scrapCount;
 }

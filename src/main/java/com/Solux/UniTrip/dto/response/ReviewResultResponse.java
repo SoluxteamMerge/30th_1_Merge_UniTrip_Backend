@@ -1,13 +1,16 @@
 package com.Solux.UniTrip.dto.response;
 
 import com.Solux.UniTrip.entity.Board;
+import com.Solux.UniTrip.entity.Image;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
 public class ReviewResultResponse {
-    private String thumbnailUrl;
+    private String imageUrl;
     private String nickname;
     private Long postId;
     private String postTitle;
@@ -17,14 +20,15 @@ public class ReviewResultResponse {
     private String categoryName;
 
     public static ReviewResultResponse from(Board board) {
+        List<Image> images = board.getImages();
+        String imageUrl = (images != null && !images.isEmpty()) ? images.get(0).getImageUrl() : null;
         return ReviewResultResponse.builder()
-                //.thumbnailUrl(board.getT())
+                .imageUrl(imageUrl)
                 .nickname(board.getUser().getNickname())
                 .postId(board.getPostId())
                 .postTitle(board.getTitle())
-                //.commentCount(board.getCommentList().size())
-                //.likeCount(board.getLikeCount())
-                //.scrapCount(board.getScrapCount())
+                .likeCount(board.getLikes())
+                .scrapCount(board.getScraps())
                 .categoryName(board.getCategory().getCategoryName())
                 .build();
     }
