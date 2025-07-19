@@ -54,4 +54,5 @@ public class KeywordController {
             return ApiResponse.of(null, "서버 내부 오류가 발생하였습니다.", 500); // 500 Internal Server Error
         }
     }
+
 }

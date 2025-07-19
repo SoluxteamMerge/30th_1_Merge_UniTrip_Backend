@@ -63,8 +63,10 @@ public class BoardController {
     public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long postId,
             @RequestBody BoardRequest request,
-            @AuthenticationPrincipal User user) {
-        BoardResponse response = boardService.updateBoard(postId, request, user);
+            @AuthenticationPrincipal User user, @RequestPart(value = "images", required = false) List<MultipartFile> images
+
+            ) {
+        BoardResponse response = boardService.updateBoard(postId, request, user, images);
         return ResponseEntity.ok(response);
     }
 
@@ -77,7 +79,7 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
     
-    // 리뷰 검색
+    // 리뷰 검색 결과 조회
     @GetMapping("/search")
     public ApiResponse<List<ReviewResultResponse>> searchResults(
             @RequestHeader ("Authorization") String token,
@@ -85,6 +87,16 @@ public class BoardController {
     ) {
         List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
+    }
+
+    // 인기 키워드로 검색 결과 조회
+    @GetMapping("/popular")
+    public ApiResponse<List<ReviewResultResponse>> searchPopularKeywords(
+            @RequestHeader("Authorization") String token,
+            @RequestParam String keyword
+    ){
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
+        return ApiResponse.onSuccess(searchs, SuccessStatus._POPULAR_SEARCH_SUCCESS);
     }
 
 }

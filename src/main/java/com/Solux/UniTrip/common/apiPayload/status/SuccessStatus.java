@@ -27,7 +27,8 @@ public enum SuccessStatus implements Basecode {
     _EMAIL_VERIFIED_SUCCESS(200, "이메일 인증이 완료되었습니다."),
     _REVIEW_SEARCH_SUCCESS(200, "키워드 별 리뷰 검색에 성공하였습니다."),
     _PROFILEIMAGE_UPLOAD_SUCCESS(200, "프로필 이미지 업로드에 성공하였습니다."),
-    _PROFILEIMAGE_DELETE_SUCCESS(200, "프로필 이미지가 삭제되었습니다.");
+    _PROFILEIMAGE_DELETE_SUCCESS(200, "프로필 이미지가 삭제되었습니다."),
+    _POPULAR_SEARCH_SUCCESS(200, "선택한 인기 키워드 검색에 성공하였습니다.");
 
 
     private final int code;
