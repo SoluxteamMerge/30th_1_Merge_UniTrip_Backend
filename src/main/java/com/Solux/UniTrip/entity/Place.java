@@ -1,9 +1,9 @@
 package com.Solux.UniTrip.entity;
 
+import com.Solux.UniTrip.dto.response.PlaceResponse;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
 import lombok.*;
-
-import javax.swing.plaf.synth.Region;
 
 @Entity
 @Table(name = "place")
@@ -16,9 +16,10 @@ public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="place_id")
     private Long placeId;
 
-    @Column(nullable = false)
+    @Column(name="place_name", nullable = false)
     private String placeName;
 
     @Column(nullable = false)
@@ -30,12 +31,43 @@ public class Place {
     @Column(nullable = false)
     private float lng;
 
-    @Column(nullable = false)
+    @Column(name="kakao_id", nullable = false)
     private String kakaoId;
 
-    @Column(nullable = false)
-    private String categoryGroupCode;
+    @Column(name="category_group_name", nullable = false)
+    private String categoryGroupName;
 
     @Column(nullable = false)
-    private String categoryGroupName;
+    @Enumerated(EnumType.STRING)
+    private Region region;
+
+    public enum Region{
+        SEOUL,
+        INCHEON,
+        DAEJEON,
+        DAEGU,
+        GWANGJU,
+        BUSAN,
+        ULSAN,
+        SEJONG,
+        GYEONGGI,
+        GANGWON,
+        CHUNGBUK,
+        CHUNGNAM,
+        GYEONGBUK,
+        GYEONGNAM,
+        JEONBUK,
+        JEONNAM,
+        JEJU,
+        ETC;
+
+        @JsonCreator
+        public static Region from(String value) {
+            try {
+                return Region.valueOf(value.toUpperCase());
+            } catch (Exception e) {
+                return Region.ETC;
+            }
+        }
+    }
 }

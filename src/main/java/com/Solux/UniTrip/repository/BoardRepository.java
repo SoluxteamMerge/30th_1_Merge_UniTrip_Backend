@@ -1,9 +1,6 @@
 package com.Solux.UniTrip.repository;
 
-import com.Solux.UniTrip.entity.Board;
-import com.Solux.UniTrip.entity.BoardType;
-import com.Solux.UniTrip.entity.PostCategory;
-import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +18,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "OR LOWER(b.placeName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Board> searchByKeyword(@Param("keyword") String keyword);
+    List<Board> findByPlace_Region(Place.Region region);
 
 
 

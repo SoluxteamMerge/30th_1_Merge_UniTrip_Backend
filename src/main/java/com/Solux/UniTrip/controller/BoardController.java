@@ -8,6 +8,7 @@ import com.Solux.UniTrip.dto.response.BoardListResponse;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.dto.response.ReviewResultResponse;
 import com.Solux.UniTrip.entity.BoardType;
+import com.Solux.UniTrip.entity.Place;
 import com.Solux.UniTrip.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -97,6 +98,16 @@ public class BoardController {
     ){
         List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
         return ApiResponse.onSuccess(searchs, SuccessStatus._POPULAR_SEARCH_SUCCESS);
+    }
+
+    // 장소별 필터링 결과 조회
+    @GetMapping("/filter")
+    public ApiResponse<List<ReviewResultResponse>> getPlacesByRegion(
+            @RequestHeader("Authorization") String token,
+            @RequestParam Place.Region region
+    ){
+        List<ReviewResultResponse> places = boardService.getPlacesByRegion(region, token);
+        return ApiResponse.onSuccess(places, SuccessStatus._PLACE_FILTERING_SUCCESS);
     }
 
 }

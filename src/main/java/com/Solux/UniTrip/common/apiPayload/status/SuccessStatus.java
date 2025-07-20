@@ -28,7 +28,8 @@ public enum SuccessStatus implements Basecode {
     _REVIEW_SEARCH_SUCCESS(200, "키워드 별 리뷰 검색에 성공하였습니다."),
     _PROFILEIMAGE_UPLOAD_SUCCESS(200, "프로필 이미지 업로드에 성공하였습니다."),
     _PROFILEIMAGE_DELETE_SUCCESS(200, "프로필 이미지가 삭제되었습니다."),
-    _POPULAR_SEARCH_SUCCESS(200, "선택한 인기 키워드 검색에 성공하였습니다.");
+    _POPULAR_SEARCH_SUCCESS(200, "선택한 인기 키워드 검색에 성공하였습니다."),
+    _PLACE_FILTERING_SUCCESS(200, "지역별 게시글 목록 조회 성공");
 
 
     private final int code;
