@@ -15,7 +15,7 @@ public enum SuccessStatus implements Basecode {
     _LOGOUT_SUCCESS(200, "로그아웃 되었습니다."),
     _MODIFY_USER_INFO_SUCCESS(200, "개인 정보 수정에 성공하였습니다."),
     _USER_DELETED(200, "회원 탈퇴 되었습니다."),
-    _GET_USER_INFO_SUCCESS(200, "회원정보 조회에 성공하였습니다."),
+    _GET_USER_INFO_SUCCESS(200, "마이페이지 사용자 정보 조회에 성공하였습니다."),
     _USER_PROFILE_REGISTERED(200, "회원정보가 등록되었습니다."),
     _GET_SCRAPS_SUCCESS(200, "스크랩한 리뷰 조회에 성공하였습니다."),
     _GET_REVIEWS_SUCCESS(200, "내가 쓴 리뷰 조회에 성공하였습니다."),
@@ -29,7 +29,8 @@ public enum SuccessStatus implements Basecode {
     _PROFILEIMAGE_UPLOAD_SUCCESS(200, "프로필 이미지 업로드에 성공하였습니다."),
     _PROFILEIMAGE_DELETE_SUCCESS(200, "프로필 이미지가 삭제되었습니다."),
     _POPULAR_SEARCH_SUCCESS(200, "선택한 인기 키워드 검색에 성공하였습니다."),
-    _PLACE_FILTERING_SUCCESS(200, "지역별 게시글 목록 조회 성공");
+    _PLACE_FILTERING_SUCCESS(200, "지역별 게시글 목록 조회에 성공하였습니다."),
+    _GET_PROFILE_SUCCESS(200, "사용자 정보 조회에 성공하였습니다.");
 
 
     private final int code;

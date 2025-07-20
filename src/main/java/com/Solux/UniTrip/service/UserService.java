@@ -6,10 +6,7 @@ import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.jwt.JwtTokenProvider;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
-import com.Solux.UniTrip.dto.response.ProfileImageResponse;
-import com.Solux.UniTrip.dto.response.ReviewResultResponse;
-import com.Solux.UniTrip.dto.response.ScrapResponse;
-import com.Solux.UniTrip.dto.response.UserInfoResponse;
+import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.Scrap;
 import com.Solux.UniTrip.entity.User;
@@ -91,6 +88,18 @@ public class UserService {
         return isDuplicated;
     }
 
+    // 사용자 정보 조회
+    @Transactional
+    public UserProfileResponse getProfile(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalStateException(("Invalid Token"));
+        }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+        return new UserProfileResponse(user.getName(), user.getNickname(), user.getPhoneNumber(), user.getUserType(), user.isEmailVerified());
+    }
+
     //사용자 정보 수정
     @Transactional
     public void modifyProfile(String token, UserProfileModifyRequest request) {
@@ -131,7 +140,7 @@ public class UserService {
         }
     }
 
-    //사용자 정보 조회
+    //마이페이지 사용자 정보 조회
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
@@ -140,7 +149,7 @@ public class UserService {
 
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
-        return new UserInfoResponse(user.getName(), user.getNickname(), user.getProfileImageUrl());
+        return new UserInfoResponse(user.getNickname(), user.getProfileImageUrl());
     }
 
     //내가 쓴 리뷰 조회

@@ -7,10 +7,7 @@ import com.Solux.UniTrip.dto.request.EmailRequest;
 import com.Solux.UniTrip.dto.request.EmailVerifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileModifyRequest;
 import com.Solux.UniTrip.dto.request.UserProfileRequest;
-import com.Solux.UniTrip.dto.response.ProfileImageResponse;
-import com.Solux.UniTrip.dto.response.ReviewResultResponse;
-import com.Solux.UniTrip.dto.response.ScrapResponse;
-import com.Solux.UniTrip.dto.response.UserInfoResponse;
+import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +27,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    //사용자 정보 조회
+    //마이페이지 정보 조회
     @GetMapping
     public ApiResponse<UserInfoResponse> getUserInfo(
             @RequestHeader("Authorization") String token
@@ -64,6 +61,16 @@ public class UserController {
                 isDuplicated ? SuccessStatus._NICKNAME_DUPLICATED : SuccessStatus._NICKNAME_AVAILABLE
         );
 
+    }
+
+    // 사용자 정보 조회
+    @GetMapping("/getProfile")
+    public ApiResponse<UserProfileResponse> getProfile(
+            @RequestHeader("Authorization") String token
+    ){
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        UserProfileResponse userprofile = userService.getProfile(token);
+        return ApiResponse.onSuccess(userprofile, SuccessStatus._GET_PROFILE_SUCCESS);
     }
 
     //사용자 정보 수정
