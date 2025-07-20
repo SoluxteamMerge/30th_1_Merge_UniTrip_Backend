@@ -7,8 +7,6 @@ import com.Solux.UniTrip.dto.request.BoardRequest;
 import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.entity.*;
 import com.Solux.UniTrip.repository.*;
-import jakarta.persistence.Column;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -291,5 +287,16 @@ public class BoardService {
 
         return new BoardResponse(200, postId, "리뷰가 성공적으로 삭제되었습니다.");
     }
+
+    // 장소별 필터링 결과 조회
+    @Transactional(readOnly = true)
+    public List<ReviewResultResponse> getPlacesByRegion(Place.Region region, String token){
+        List<Board> boards = boardRepository.findByPlace_Region(region);
+        return boards.stream()
+                .map(ReviewResultResponse::from)
+                .collect(Collectors.toList());
+    }
+
+
 
 }

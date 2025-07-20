@@ -57,6 +57,11 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    // Place 엔티티 매핑
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place_id")
+    private Place place;
+
     // 여행 모집용 필드
     @Column(nullable = false, name = "place_name")
     private String placeName;
@@ -89,11 +94,6 @@ public class Board {
         this.likes = 0;
         this.scraps = 0;
         this.commentCount = 0;
-        this.placeName = request.getPlaceName();
-        this.roadAddress = request.getRoadAddress();
-        this.kakaoPlaceId = request.getKakaoPlaceId();
-        this.latitude = request.getLatitude();
-        this.longitude = request.getLongitude();
         this.images = new ArrayList<>();
 
         for (Image image : images) {
