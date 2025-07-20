@@ -15,15 +15,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT DISTINCT b FROM Board b JOIN b.category c " +
             "WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(b.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(b.placeName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(b.place.placeName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Board> searchByKeyword(@Param("keyword") String keyword);
     List<Board> findByPlace_Region(Place.Region region);
-
-
-
-
-
-
 
 }

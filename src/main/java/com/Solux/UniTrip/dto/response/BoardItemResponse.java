@@ -27,9 +27,9 @@ public class BoardItemResponse {
     private Boolean overnightFlag;
     private Integer recruitmentCnt;
     private String placeName;
-    private String roadAddress;
-    private String kakaoPlaceId;
-    private Double latitude;
-    private Double longitude;
+    private String address;
+    private String kakaoId;
+    private String categoryGroupName;
+    private String region;
     private int scrapCount;
 }

@@ -62,38 +62,18 @@ public class Board {
     @JoinColumn(name = "place_id")
     private Place place;
 
-    // 여행 모집용 필드
-    @Column(nullable = false, name = "place_name")
-    private String placeName;
-
-    @Column(nullable = false)
-    private String roadAddress;
-
-    @Column(nullable = false)
-    private String kakaoPlaceId;
-
-    @Column(nullable = false)
-    private Double latitude;
-
-    @Column(nullable = false)
-    private Double longitude;
-
-    public Board(BoardRequest request, User user, PostCategory category, List<Image> images) {
+    public Board(BoardRequest request, User user, PostCategory category, List<Image> images, Place place) {
         this.boardType = BoardType.valueOf(request.getBoardType());
         this.category = category;
         this.title = request.getTitle();
         this.content = request.getContent();
-        this.placeName = request.getPlaceName();
-        this.roadAddress = request.getRoadAddress();
-        this.kakaoPlaceId = request.getKakaoPlaceId();
-        this.latitude = request.getLatitude();
-        this.longitude = request.getLongitude();
         this.user = user;
         this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
         this.views = 0;
         this.likes = 0;
         this.scraps = 0;
         this.commentCount = 0;
+        this.place = place;
         this.images = new ArrayList<>();
 
         for (Image image : images) {

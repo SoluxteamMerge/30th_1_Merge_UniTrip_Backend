@@ -12,10 +12,10 @@ public class BoardRequest {
     private String imageUrl;
 
     private String placeName;
-    private String roadAddress;
-    private String kakaoPlaceId;
-    private Double latitude;
-    private Double longitude;
+    private String address;
+    private String kakaoId;
+    private String categoryGroupName;
+    private String region;
 
     private Boolean overnightFlag;
     private Integer recruitmentCnt;
