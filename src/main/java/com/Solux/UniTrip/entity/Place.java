@@ -34,7 +34,7 @@ public class Place {
     @Column(name="kakao_id", nullable = false)
     private String kakaoId;
 
-    @Column(name="category_group_name", nullable = false)
+    @Column(name="category_group_name")
     private String categoryGroupName;
 
     @Column(nullable = false)
