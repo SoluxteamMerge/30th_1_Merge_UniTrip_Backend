@@ -35,14 +35,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        // ✅ 인증 필요 없는 경로 예외 처리
+        // 인증 필요 없는 경로 예외 처리
         if (path.startsWith("/api/google/login")
                 || path.startsWith("/oauth2")
                 || path.startsWith("/public")
+                || path.startsWith("/swagger")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/webjars")
                 || ("GET".equals(method) && (path.startsWith("/api/comments")
                 || path.equals("/api/schedules")         //일정 목록 조회
                 || path.matches("^/api/schedules/\\d+$") // 일정 상세 조회
                 || path.equals("/api/keywords/popular")))
+                || path.startsWith("/api/reviews")
                 || ("POST".equals(method) && path.equals("/api/keywords/rank"))
                 || path.equals("/api/user/email")
                 || path.equals("/api/user/email/verify")

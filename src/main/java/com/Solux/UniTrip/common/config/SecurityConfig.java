@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/comments", "/api/reviews/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success", "/google/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/keywords/rank","/api/user/email/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
