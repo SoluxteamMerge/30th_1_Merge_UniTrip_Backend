@@ -24,9 +24,9 @@ public class BoardService {
     private final PostCategoryRepository categoryRepository;
     private final GroupRecruitBoardRepository groupRecruitBoardRepository;
     private final BoardLikesRepository boardLikesRepository;
+    private final PlaceRepository placeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-    private final PostCategoryRepository postCategoryRepository;
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
 
@@ -72,6 +72,17 @@ public class BoardService {
                     return categoryRepository.save(newCategory);
                 });
 
+        // 장소 저장
+        Place place = Place.builder()
+                .placeName(request.getPlaceName())
+                .address(request.getAddress())
+                .kakaoId(request.getKakaoId())
+                .categoryGroupName(request.getCategoryGroupName())
+                .region(Place.Region.from(request.getRegion()))
+                .build();
+
+        placeRepository.save(place);
+
         // multipartfile 리스트를 s3에 업로드 하여 url 받기
         List<Image> images = new ArrayList<>();
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -84,7 +95,7 @@ public class BoardService {
         }
 
         // Board 생성 및 저장
-        Board board = new Board(request, user, category, images);
+        Board board = new Board(request, user, category, images, place);
         Board savedBoard = boardRepository.save(board);
 
         //image 엔티티에 저장 후 한꺼번에 저장
@@ -148,7 +159,6 @@ public class BoardService {
             isLiked = boardLikesRepository.findByBoardAndUserAndStatus(board, user, true)
                     .isPresent();
 
-
         BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
@@ -164,11 +174,11 @@ public class BoardService {
                 .isLiked(isLiked)
                 .isScraped(false)
                 .imageUrl("")
-                .placeName(board.getPlaceName())
-                .roadAddress(board.getRoadAddress())
-                .kakaoPlaceId(board.getKakaoPlaceId())
-                .latitude(board.getLatitude())
-                .longitude(board.getLongitude());
+                .placeName(board.getPlace().getPlaceName())
+                .address(board.getPlace().getAddress())
+                .kakaoId(board.getPlace().getKakaoId())
+                .categoryGroupName(board.getPlace().getCategoryGroupName())
+                .region(String.valueOf(board.getPlace().getRegion()));
 
         if (BoardType.모임구인.equals(board.getBoardType())) {
             groupRecruitBoardRepository.findById(board.getPostId())
@@ -296,7 +306,5 @@ public class BoardService {
                 .map(ReviewResultResponse::from)
                 .collect(Collectors.toList());
     }
-
-
 
 }
