@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ public class BoardService {
     private final PostCategoryRepository categoryRepository;
     private final GroupRecruitBoardRepository groupRecruitBoardRepository;
     private final BoardLikesRepository boardLikesRepository;
+    private final BoardScarpRepository boardScarpRepository;
     private final PlaceRepository placeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
@@ -35,13 +35,11 @@ public class BoardService {
 
     @Transactional
     public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
-        if (user == null) {
+        if (user == null)
             throw new RuntimeException("User cannot be null");
-        }
 
-        if (request.getBoardType() == null || request.getBoardType().trim().isEmpty()) {
+        if (request.getBoardType() == null || request.getBoardType().trim().isEmpty())
             throw new RuntimeException("BoardType must not be empty");
-        }
 
         BoardType boardType;
         try {
@@ -84,7 +82,7 @@ public class BoardService {
                 .region(Place.Region.from(request.getRegion()))
                 .build();
 
-        placeRepository.save(place);
+        Place savedPlace = placeRepository.save(place);
 
         // multipartfile 리스트를 s3에 업로드 하여 url 받기
         List<Image> images = new ArrayList<>();
@@ -98,7 +96,9 @@ public class BoardService {
         }
 
         // Board 생성 및 저장
-        Board board = new Board(request, user, category, images, place);
+        Board board = new Board(request, user, category, images, savedPlace);
+        System.out.println("✔ board.getPlace().getKakaoId(): " + board.getPlace().getKakaoId());
+
         Board savedBoard = boardRepository.save(board);
 
         //image 엔티티에 저장 후 한꺼번에 저장
@@ -153,14 +153,19 @@ public class BoardService {
 
     private BoardItemResponse convertToBoardItemResponse(Board board, User user) {
         Long likes = boardLikesRepository.countByBoardAndStatus(board, true);
+        Long scraps = boardScarpRepository.countByBoard(board);
 
         // 기본값 false
         boolean isLiked = false;
+        boolean isScraped = false;
 
         // 로그인한 사용자라면 내가 좋아요 눌렀는지 확인
-        if (user != null)
+        if (user != null) {
             isLiked = boardLikesRepository.findByBoardAndUserAndStatus(board, user, true)
                     .isPresent();
+            isScraped = boardScarpRepository.findByBoardAndUser(board, user)
+                    .isPresent();
+        }
 
         BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
@@ -173,9 +178,9 @@ public class BoardService {
                 .createdAt(board.getCreatedAt().toString())
                 .commentCount(0)
                 .likes(likes.intValue())
-                .scrapCount(0)
+                .scrapCount(scraps.intValue())
                 .isLiked(isLiked)
-                .isScraped(false)
+                .isScraped(isScraped)
                 .imageUrl("")
                 .placeName(board.getPlace().getPlaceName())
                 .address(board.getPlace().getAddress())
