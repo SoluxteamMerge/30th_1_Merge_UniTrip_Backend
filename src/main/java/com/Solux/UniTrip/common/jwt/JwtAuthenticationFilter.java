@@ -99,11 +99,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7).trim();
+        if (header != null) {
+            if (header.startsWith("Bearer ")) {
+                return header.substring(7).trim();
+            } else {
+                // Bearer 없이도 허용
+                return header.trim();
+            }
         }
         return null;
     }
+
 
     private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
