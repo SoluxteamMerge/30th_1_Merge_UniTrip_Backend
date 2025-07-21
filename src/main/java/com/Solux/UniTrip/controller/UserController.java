@@ -69,7 +69,7 @@ public class UserController {
             @RequestHeader("Authorization") String token
     ){
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-        UserProfileResponse userprofile = userService.getProfile(token);
+        UserProfileResponse userprofile = userService.getProfile(accessToken);
         return ApiResponse.onSuccess(userprofile, SuccessStatus._GET_PROFILE_SUCCESS);
     }
 
