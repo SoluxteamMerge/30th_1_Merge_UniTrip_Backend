@@ -2,13 +2,15 @@ package com.Solux.UniTrip.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import lombok.Builder.Default;
 
 @Entity
-@Table(name= "scrap", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}))
+@Table(name = "scrap", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Scrap {
@@ -28,8 +30,10 @@ public class Scrap {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Scrap(User user, Board board) {
+    @Builder
+    public Scrap(User user, Board board, LocalDateTime createdAt) {
         this.user = user;
         this.board = board;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 }
