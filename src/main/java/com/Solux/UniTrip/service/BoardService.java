@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +31,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
+    private final RatingRepository ratingRepository;
 
     @Transactional
     public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
@@ -307,4 +310,45 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    //별점 등록/삭제
+    @Transactional
+    public RatingResponse toggleRating(Long postId, Long userId, Double newRating) {
+        // 유효성 체크 (.5 단위 필터링)
+        if (newRating % 0.5 != 0) {
+            throw new BaseException(FailureStatus.RATING_INVALID);
+        }
+
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
+
+        /*// 본인 검증
+        if (!board.getUser().getUserId().equals(userId)) {
+            throw new BaseException(FailureStatus.FORBIDDEN);
+        }*/
+
+        // userId 기준으로 별점 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+
+        Optional<Rating> existing = ratingRepository.findByBoardAndUser(board, user);
+
+        if (existing.isPresent()) {
+            Rating rating = existing.get();
+            if (rating.getRating().equals(newRating)) {
+                ratingRepository.delete(rating);
+                return new RatingResponse(postId, null, false);
+            } else {
+                rating.setRating(newRating);
+                return new RatingResponse(postId, newRating, true);
+            }
+        } else {
+            Rating rating = Rating.builder()
+                    .board(board)
+                    .user(user)
+                    .rating(newRating)
+                    .build();
+            ratingRepository.save(rating);
+            return new RatingResponse(postId, newRating, true);
+        }
+    }
 }

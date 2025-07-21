@@ -1,15 +1,15 @@
 package com.Solux.UniTrip.controller;
 
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.BoardRequest;
-import com.Solux.UniTrip.dto.response.BoardItemResponse;
-import com.Solux.UniTrip.dto.response.BoardListResponse;
-import com.Solux.UniTrip.dto.response.BoardResponse;
-import com.Solux.UniTrip.dto.response.ReviewResultResponse;
+import com.Solux.UniTrip.dto.request.RatingRequest;
+import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.Place;
 import com.Solux.UniTrip.service.BoardService;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -110,4 +110,24 @@ public class BoardController {
         return ApiResponse.onSuccess(places, SuccessStatus._PLACE_FILTERING_SUCCESS);
     }
 
+    //리뷰 별점 등록/삭제
+    @PostMapping("/{postId}/rating")
+    public ResponseEntity<ApiResponse<RatingResponse>> toggleRating(
+            @PathVariable Long postId,
+            @RequestBody RatingRequest requestDto,
+            @AuthenticationPrincipal User user) {
+
+        if (user == null) {
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
+        }
+
+        RatingResponse responseDto = boardService.toggleRating(postId, user.getUserId(),
+                requestDto.getRating());
+
+        SuccessStatus status = responseDto.isRated() ?
+                SuccessStatus._RATING_REGISTERED :
+                SuccessStatus._RATING_DELETED;
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(responseDto, status));
+    }
 }

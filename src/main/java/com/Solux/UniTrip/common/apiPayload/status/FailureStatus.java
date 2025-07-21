@@ -19,7 +19,7 @@ public enum FailureStatus implements Basecode {
     _SCHEDULE_CONFLICT(409, "동일 기간에 이미 일정이 존재합니다."),
     _INVALID_DATE_FORMAT(400, "잘못된 날짜 형식입니다."),
     _INVALID_DATE_RANGE(400, "시작일은 종료일보다 이후일 수 없습니다."),
-    FORBIDDEN(403, "일정을 수정할 권한이 없습니다."),
+    FORBIDDEN(403, "권한이 없는 사용자입니다."),
     SCHEDULE_NOT_FOUND(404, "해당 일정을 찾을 수 없습니다."),
     _PROFILE_ALREADY_REGISTERED(409, "이미 프로필 등록을 하셨습니다."),
     _PROFILE_NOT_REGISTERED(400, "아직 프로필 정보가 등록되지 않았습니다."),
@@ -31,7 +31,9 @@ public enum FailureStatus implements Basecode {
     VERIFICATION_CODE_MISMATCH(400,  "인증 코드가 일치하지 않습니다."),
     _PROFILEIMAGE_UPLOAD_FAILURE(500, "프로필 이미지 업로드에 실패하였습니다."),
     _PROFILEIMAGE_NOT_FOUND(400, "삭제할 프로필 사진이 없습니다."),
-    SCHEDULE_OVERLAP(409, "해당 기간에 이미 등록된 일정이 존재합니다.");
+    SCHEDULE_OVERLAP(409, "해당 기간에 이미 등록된 일정이 존재합니다."),
+    RATING_INVALID(400, "별점은 0.5 단위로 입력되어야 합니다.");
+
 
 
     private final int code;
