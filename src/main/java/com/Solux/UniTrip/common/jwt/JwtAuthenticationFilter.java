@@ -35,56 +35,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        // 인증 필요 없는 경로 예외 처리
-        if (path.startsWith("/api/google/login")
-                || path.startsWith("/oauth2")
-                || path.startsWith("/public")
-                || path.startsWith("/swagger")
-                || path.startsWith("/v3/api-docs")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/webjars")
-                || ("GET".equals(method) && (path.startsWith("/api/comments")
-                || path.equals("/api/schedules")         //일정 목록 조회
-                || path.matches("^/api/schedules/\\d+$") // 일정 상세 조회
-                || path.equals("/api/keywords/popular")))
-                || path.startsWith("/api/reviews")
-                || ("POST".equals(method) && path.equals("/api/keywords/rank"))
-                || path.equals("/api/user/email")
-                || path.equals("/api/user/email/verify")
-        ) {
+        // 인증 없이 허용되는 경로들
+        boolean isPublicPath =
+                path.startsWith("/api/google/login") ||
+                        path.startsWith("/oauth2") ||
+                        path.startsWith("/public") ||
+                        path.startsWith("/swagger") ||
+                        path.startsWith("/v3/api-docs") ||
+                        path.startsWith("/swagger-ui") ||
+                        path.startsWith("/webjars") ||
+
+                        // GET만 허용되는 경로
+                        ("GET".equals(method) && (
+                                path.startsWith("/api/comments") ||
+                                        path.equals("/api/schedules") ||
+                                        path.matches("^/api/schedules/\\d+$") ||
+                                        path.equals("/api/keywords/popular") ||
+
+                                        // 리뷰 GET만 예외
+                                        path.equals("/api/reviews") ||
+                                        path.matches("^/api/reviews\\?boardType=.*$") ||
+                                        path.matches("^/api/reviews/\\d+$") ||
+                                        path.startsWith("/api/reviews/search") ||
+                                        path.startsWith("/api/reviews/popular") ||
+                                        path.startsWith("/api/reviews/filter")
+                        )) ||
+
+                        // 이메일 인증, 키워드 랭킹 POST
+                        ("POST".equals(method) && path.equals("/api/keywords/rank")) ||
+                        path.equals("/api/user/email") ||
+                        path.equals("/api/user/email/verify");
+
+        if (isPublicPath) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 토큰 추출 및 검증
         String token = resolveToken(request);
-
-        // 토큰 없거나 유효하지 않은 경우
         if (token == null || !jwtTokenProvider.validateToken(token)) {
-            // /api/reviews/** 경로는 인증 안 되어도 401 반환하지 않고 통과시킴
-            if (path.startsWith("/api/reviews")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            // 나머지 경로는 401 반환
             sendUnauthorizedResponse(response);
             return;
         }
 
+        // 사용자 인증 처리
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElse(null);
-
         if (user == null) {
-            // /api/reviews/** 경로는 인증 안 되어도 401 반환하지 않고 통과시킴
-            if (path.startsWith("/api/reviews")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
             sendUnauthorizedResponse(response);
             return;
         }
 
-        // SecurityContext에 인증 정보 저장
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         user,
@@ -103,13 +104,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (header.startsWith("Bearer ")) {
                 return header.substring(7).trim();
             } else {
-                // Bearer 없이도 허용
-                return header.trim();
+                return header.trim(); // Bearer 없이도 허용
             }
         }
         return null;
     }
-
 
     private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

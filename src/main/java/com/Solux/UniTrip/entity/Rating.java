@@ -6,9 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ratings", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"post", "user"})
-})
+@Table(name = "ratings")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,11 +19,12 @@ public class Rating {
     private Long ratingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post", nullable = false)
+    @JoinColumn(name = "post_id" +
+            "", nullable = false)
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)

@@ -5,8 +5,12 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class RatingRequest {
     @NotNull(message = "별점은 필수입니다.")
     @DecimalMin(value = "0.5", message = "별점은 0.5 이상이어야 합니다.")
