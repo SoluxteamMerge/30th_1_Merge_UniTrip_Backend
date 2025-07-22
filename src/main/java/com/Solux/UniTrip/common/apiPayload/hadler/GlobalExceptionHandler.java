@@ -57,14 +57,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ApiResponse.onFailure(null, FailureStatus._BAD_REQUESET));
+                .body(ApiResponse.onFailure(null, FailureStatus._BAD_REQUSET));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ApiResponse.onFailure(null, FailureStatus._BAD_REQUESET));
+                .body(ApiResponse.onFailure(null, FailureStatus._BAD_REQUSET));
     }
 
     @ExceptionHandler(Exception.class)

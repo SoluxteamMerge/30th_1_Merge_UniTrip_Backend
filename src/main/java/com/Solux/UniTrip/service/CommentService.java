@@ -39,7 +39,7 @@ public class CommentService {
     public CommentResponse createComment(CommentCreateRequest dto, Long userId) {
         if (dto == null || dto.getContent() == null ||
                 dto.getContent().trim().isEmpty()) {
-            throw new BaseException(FailureStatus._BAD_REQUESET);
+            throw new BaseException(FailureStatus._BAD_REQUSET);
         }
 
         // 실제로는 Post 존재 여부를 확인해야 함
@@ -73,7 +73,7 @@ public class CommentService {
     @Transactional
     public CommentUpdateResponse updateComment(Long commentId, CommentUpdateRequest dto, Long userId) {
         if (dto == null || dto.getContent() == null || dto.getContent().trim().isEmpty()) {
-            throw new BaseException(FailureStatus._BAD_REQUESET);
+            throw new BaseException(FailureStatus._BAD_REQUSET);
         }
 
         Comment comment = commentRepository.findById(commentId)
