@@ -33,6 +33,8 @@ public enum FailureStatus implements Basecode {
     _PROFILEIMAGE_NOT_FOUND(400, "삭제할 프로필 사진이 없습니다."),
     SCHEDULE_OVERLAP(409, "해당 기간에 이미 등록된 일정이 존재합니다."),
     RATING_INVALID(400, "별점은 0.5 단위로 입력되어야 합니다."),
+    _INVALID_NICKNAME_FORMAT(400, "닉네임에 공백을 포함할 수 없습니다."),
+    RATING_INVALID(400, "별점은 0.5 단위로 입력되어야 합니다."),
     _BOARDTYPE_NOT_NULL(400, "BoardType must not be empty"),
     _INVAILD_BOARDTYPE(400, "Invalid BoardType"),
     _CATEGORY_NOT_NULL(400, "Category name must not be empty"),

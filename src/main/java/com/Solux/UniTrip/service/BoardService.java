@@ -92,7 +92,9 @@ public class BoardService {
 
             //URL 리스트로 Image 엔티티 리스트 생성 (Board는 아직 없으니 null로 세팅)
             for (String url : imageUrls) {
-                images.add(new Image(null, url));
+                Image image = new Image(null, url, user);
+                image.setUser(user);
+                images.add(image);
             }
         }
 
@@ -268,7 +270,9 @@ public class BoardService {
 
             List<Image> newImages = new ArrayList<>();
             for (String url : imageUrls) {
-                newImages.add(new Image(board, url));
+                Image image = new Image(board, url, user);
+                image.setUser(user);
+                newImages.add(image);
             }
 
             board.getImages().addAll(newImages);

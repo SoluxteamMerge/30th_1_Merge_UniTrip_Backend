@@ -37,9 +37,11 @@ public class Image {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Image(Board board, String imageUrl) {
+    public Image(Board board, String imageUrl, User user) {
         this.board = board;
         this.imageUrl = imageUrl;
+        this.user = user;
     }
+
 }
 
