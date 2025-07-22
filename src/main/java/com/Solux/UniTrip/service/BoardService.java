@@ -38,30 +38,30 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (request.getBoardType() == null || request.getBoardType().trim().isEmpty())
-            throw new RuntimeException("BoardType must not be empty");
+            throw new BaseException(FailureStatus._BOARDTYPE_NOT_NULL);
 
         BoardType boardType;
         try {
             boardType = BoardType.valueOf(request.getBoardType());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid BoardType: " + request.getBoardType());
+            throw new BaseException(FailureStatus._INVAILD_BOARDTYPE);
         }
 
         String categoryName = request.getCategoryName();
         if (categoryName == null || categoryName.trim().isEmpty()) {
-            throw new RuntimeException("Category name must not be empty");
+            throw new BaseException(FailureStatus._CATEGORY_NOT_NULL);
         }
 
         // boardType이 "모임구인"이면 추가 필드 검증
         if (boardType == BoardType.모임구인) {
             if (request.getOvernightFlag() == null) {
-                throw new RuntimeException("overnightFlag must not be null for 모임구인 type");
+                throw new BaseException(FailureStatus._OVERNIGHT_NOT_NULL);
             }
             if (request.getRecruitmentCnt() == null) {
-                throw new RuntimeException("recruitmentCnt must not be null for 모임구인 type");
+                throw new BaseException(FailureStatus._RECRUITMENTCNT_NOT_NULL);
             }
         }
 
@@ -137,7 +137,7 @@ public class BoardService {
     // 단건 조회
     public BoardItemResponse getBoardById(Long postId, User user) {
         Board board = boardRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
         return convertToBoardItemResponse(board, user);
     }
 
@@ -226,15 +226,15 @@ public class BoardService {
 
         // 2. 작성자인지 확인
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (!board.getUser().getUserId().equals(user.getUserId()))
-            throw new SecurityException("수정 권한이 없습니다.");
+            throw new BaseException(FailureStatus.FORBIDDEN);
 
         // 3. 내용 수정
         // categoryName → 실제 Category 엔티티 찾아서 설정
         PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(board.getBoardType(), request.getCategoryName())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(FailureStatus._CATEGORY_NOT_FOUND));
 
         // 공통 필드 업데이트
         board.updateCommonFields(
@@ -246,7 +246,7 @@ public class BoardService {
         // 모임구인 게시판이면 GroupRecruitBoard 도 수정
         if (BoardType.모임구인.equals(board.getBoardType())) {
             GroupRecruitBoard groupRecruit = groupRecruitBoardRepository.findById(postId)
-                    .orElseThrow(() -> new IllegalArgumentException("모임구인 추가 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
             groupRecruit.updateRecruitFields(
                     request.getOvernightFlag(),
                     request.getRecruitmentCnt()
@@ -284,14 +284,14 @@ public class BoardService {
 
     public BoardResponse deleteBoard(Long postId, User user) {
         // 1. 기존 게시글 조회
-        Board board = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(postId).orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
 
         // 2. 작성자인지 확인
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (!board.getUser().getUserId().equals(user.getUserId()))
-            throw new SecurityException("수정 권한이 없습니다.");
+            throw new BaseException(FailureStatus.FORBIDDEN);
 
         // s3에서 삭제
         List<Image> images = board.getImages();
