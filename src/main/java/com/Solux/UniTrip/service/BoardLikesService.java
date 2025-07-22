@@ -1,5 +1,7 @@
 package com.Solux.UniTrip.service;
 
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
+import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.dto.response.BoardResponse;
 import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.PostLikes;
@@ -21,10 +23,10 @@ public class BoardLikesService {
     @Transactional
     public BoardResponse toggleLike(Long postId, User user) {
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         Board board = boardRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
 
         PostLikes existingLike = boardLikesRepository.findByBoardAndUserAndStatus(board, user, true)
                 .orElse(null);
