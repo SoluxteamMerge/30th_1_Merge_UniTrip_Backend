@@ -11,6 +11,7 @@ import com.Solux.UniTrip.entity.Place;
 import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.service.BoardService;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.service.KeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final KeywordService keywordService;
     private final BoardRepository boardRepository;
 
     // 리뷰 작성
@@ -95,6 +97,9 @@ public class BoardController {
             @RequestHeader ("Authorization") String token,
             @RequestParam String keyword
     ) {
+        // 검색 키워드 카운트 증가
+        keywordService.increaseSearchCount(keyword);
+
         List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
