@@ -8,6 +8,7 @@ import com.Solux.UniTrip.dto.request.RatingRequest;
 import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.Place;
+import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.service.BoardService;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     // 리뷰 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -40,7 +42,6 @@ public class BoardController {
     // 리뷰 조회(청춘카드)
     @GetMapping
     public ResponseEntity<BoardListResponse> getAllReviews(@AuthenticationPrincipal User user) {
-        System.out.println("user: "+user);
         BoardListResponse response = boardService.getAllCard(user);
         return ResponseEntity.ok(response);
     }
@@ -56,6 +57,14 @@ public class BoardController {
     @GetMapping("/{postId}")
     public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId, @AuthenticationPrincipal User user) {
         BoardItemResponse response = boardService.getBoardById(postId, user);
+        return ResponseEntity.ok(response);
+    }
+
+    // 리뷰 추천 조회
+    @GetMapping("/recommend")
+    public ResponseEntity<BoardItemResponse> getRecommendBoard() {
+        Long randomId = boardRepository.findRandomPostId();  // ← 여기서 랜덤 postId 가져옴
+        BoardItemResponse response = boardService.getBoardById(randomId, null);
         return ResponseEntity.ok(response);
     }
 
