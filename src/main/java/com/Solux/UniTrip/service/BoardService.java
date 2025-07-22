@@ -141,7 +141,6 @@ public class BoardService {
         return convertToBoardItemResponse(board, user);
     }
 
-
     private BoardListResponse convertToBoardListResponse(List<Board> boards, User user) {
         List<BoardItemResponse> items = boards.stream()
                 .map(board -> convertToBoardItemResponse(board, user))
