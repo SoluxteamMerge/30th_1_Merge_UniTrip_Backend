@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class BoardService {
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
     private final RatingRepository ratingRepository;
+    private final SearchKeywordRepository searchKeywordRepository;
 
     @Transactional
     public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
@@ -216,6 +218,7 @@ public class BoardService {
                 .map(ReviewResultResponse::from)
                 .collect(Collectors.toList());
     }
+
 
     @Transactional
     public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
