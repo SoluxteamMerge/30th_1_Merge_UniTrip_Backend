@@ -1,6 +1,7 @@
 package com.Solux.UniTrip.controller;
 
 import com.Solux.UniTrip.common.apiPayload.base.ApiResponse;
+import com.Solux.UniTrip.common.apiPayload.exception.BaseException;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
 import com.Solux.UniTrip.common.apiPayload.status.SuccessStatus;
 import com.Solux.UniTrip.dto.request.EmailRequest;
@@ -54,8 +55,13 @@ public class UserController {
             @RequestHeader("Authorization") String token,
             @RequestParam String nickname
     ) {
+        if (nickname == null || nickname.trim().isEmpty() || nickname.contains(" ")) {
+            throw new BaseException(FailureStatus._INVALID_NICKNAME_FORMAT);
+        }
+
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
         boolean isDuplicated = userService.checkNickname(accessToken, nickname);
+
         return ApiResponse.onSuccess(
                 Map.of("isDuplicated", isDuplicated),
                 isDuplicated ? SuccessStatus._NICKNAME_DUPLICATED : SuccessStatus._NICKNAME_AVAILABLE

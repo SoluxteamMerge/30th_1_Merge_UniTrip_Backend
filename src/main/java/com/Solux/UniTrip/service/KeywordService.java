@@ -56,4 +56,20 @@ public class KeywordService {
 
         }
     }
+
+    // 리뷰 검색 시 searchCount 증가
+    @Transactional
+    public void increaseSearchCount(String keyword) {
+        SearchKeyword searchKeyword = searchKeywordRepository.findById(keyword)
+                .orElse(SearchKeyword.builder()
+                        .keyword(keyword)
+                        .searchCount(0)
+                        .lastSearchedAt(LocalDateTime.now())
+                        .build());
+
+        searchKeyword.setSearchCount(searchKeyword.getSearchCount() + 1);
+        searchKeyword.setLastSearchedAt(LocalDateTime.now());
+
+        searchKeywordRepository.save(searchKeyword);
+    }
 }

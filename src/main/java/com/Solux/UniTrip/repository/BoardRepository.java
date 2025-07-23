@@ -20,4 +20,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> searchByKeyword(@Param("keyword") String keyword);
     List<Board> findByPlace_Region(Place.Region region);
 
+    @Query(value = "SELECT post_id FROM board ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Long findRandomPostId();
 }

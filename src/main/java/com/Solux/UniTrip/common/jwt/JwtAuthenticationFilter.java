@@ -67,6 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         path.equals("/api/user/email/verify");
 
         if (isPublicPath) {
+            // ✅ 토큰이 있으면 무조건 인증 처리
+            tryAuthenticateIfTokenPresent(request);
             filterChain.doFilter(request, response);
             return;
         }
@@ -123,4 +125,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         new ObjectMapper().writeValue(response.getOutputStream(), result);
     }
+
+    private void tryAuthenticateIfTokenPresent(HttpServletRequest request) {
+        String token = resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String email = jwtTokenProvider.getEmailFromToken(token);
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null) {
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+    }
 }
+

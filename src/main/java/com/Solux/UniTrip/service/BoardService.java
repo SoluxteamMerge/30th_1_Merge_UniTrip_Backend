@@ -32,34 +32,35 @@ public class BoardService {
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
     private final RatingRepository ratingRepository;
+    private final SearchKeywordRepository searchKeywordRepository;
 
     @Transactional
     public BoardResponse createBoard(BoardRequest request, User user,List<MultipartFile> multipartFiles) {
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (request.getBoardType() == null || request.getBoardType().trim().isEmpty())
-            throw new RuntimeException("BoardType must not be empty");
+            throw new BaseException(FailureStatus._BOARDTYPE_NOT_NULL);
 
         BoardType boardType;
         try {
             boardType = BoardType.valueOf(request.getBoardType());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid BoardType: " + request.getBoardType());
+            throw new BaseException(FailureStatus._INVAILD_BOARDTYPE);
         }
 
         String categoryName = request.getCategoryName();
         if (categoryName == null || categoryName.trim().isEmpty()) {
-            throw new RuntimeException("Category name must not be empty");
+            throw new BaseException(FailureStatus._CATEGORY_NOT_NULL);
         }
 
         // boardType이 "모임구인"이면 추가 필드 검증
         if (boardType == BoardType.모임구인) {
             if (request.getOvernightFlag() == null) {
-                throw new RuntimeException("overnightFlag must not be null for 모임구인 type");
+                throw new BaseException(FailureStatus._OVERNIGHT_NOT_NULL);
             }
             if (request.getRecruitmentCnt() == null) {
-                throw new RuntimeException("recruitmentCnt must not be null for 모임구인 type");
+                throw new BaseException(FailureStatus._RECRUITMENTCNT_NOT_NULL);
             }
         }
 
@@ -91,7 +92,9 @@ public class BoardService {
 
             //URL 리스트로 Image 엔티티 리스트 생성 (Board는 아직 없으니 null로 세팅)
             for (String url : imageUrls) {
-                images.add(new Image(null, url));
+                Image image = new Image(null, url, user);
+                image.setUser(user);
+                images.add(image);
             }
         }
 
@@ -133,12 +136,16 @@ public class BoardService {
     }
 
     // 단건 조회
-    public BoardItemResponse getBoardById(Long postId, User user) {
+    @Transactional
+    public BoardItemResponse getBoardById(Long postId, User user, boolean increaseView) {
         Board board = boardRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
+
+        if (increaseView)
+            board.setViews(board.getViews() + 1);
+
         return convertToBoardItemResponse(board, user);
     }
-
 
     private BoardListResponse convertToBoardListResponse(List<Board> boards, User user) {
         List<BoardItemResponse> items = boards.stream()
@@ -167,6 +174,22 @@ public class BoardService {
                     .isPresent();
         }
 
+        List<Image> images = board.getImages();
+        String imageUrl = (images != null && !images.isEmpty()) ? images.get(0).getImageUrl() : null;
+
+        // 평균 평점 계산
+        List<Rating> ratings = board.getRatings();
+        double averageRating = 0.0;
+        if (ratings != null && !ratings.isEmpty()) {
+            averageRating = ratings.stream()
+                    .mapToDouble(Rating::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            // 소수점 첫째 자리로 반올림
+            averageRating = Math.round(averageRating * 10) / 10.0;
+        }
+
         BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
@@ -176,12 +199,13 @@ public class BoardService {
                 .userId(board.getUser().getUserId())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())
-                .commentCount(0)
+                .views(board.getViews())
+                .rating(averageRating)
                 .likes(likes.intValue())
                 .scrapCount(scraps.intValue())
                 .isLiked(isLiked)
                 .isScraped(isScraped)
-                .imageUrl("")
+                .imageUrl(imageUrl)
                 .placeName(board.getPlace().getPlaceName())
                 .address(board.getPlace().getAddress())
                 .kakaoId(board.getPlace().getKakaoId())
@@ -217,6 +241,7 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+
     @Transactional
     public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
         // 1. 기존 게시글 조회
@@ -224,15 +249,15 @@ public class BoardService {
 
         // 2. 작성자인지 확인
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (!board.getUser().getUserId().equals(user.getUserId()))
-            throw new SecurityException("수정 권한이 없습니다.");
+            throw new BaseException(FailureStatus.FORBIDDEN);
 
         // 3. 내용 수정
         // categoryName → 실제 Category 엔티티 찾아서 설정
         PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(board.getBoardType(), request.getCategoryName())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(FailureStatus._CATEGORY_NOT_FOUND));
 
         // 공통 필드 업데이트
         board.updateCommonFields(
@@ -244,7 +269,7 @@ public class BoardService {
         // 모임구인 게시판이면 GroupRecruitBoard 도 수정
         if (BoardType.모임구인.equals(board.getBoardType())) {
             GroupRecruitBoard groupRecruit = groupRecruitBoardRepository.findById(postId)
-                    .orElseThrow(() -> new IllegalArgumentException("모임구인 추가 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
             groupRecruit.updateRecruitFields(
                     request.getOvernightFlag(),
                     request.getRecruitmentCnt()
@@ -267,7 +292,9 @@ public class BoardService {
 
             List<Image> newImages = new ArrayList<>();
             for (String url : imageUrls) {
-                newImages.add(new Image(board, url));
+                Image image = new Image(board, url, user);
+                image.setUser(user);
+                newImages.add(image);
             }
 
             board.getImages().addAll(newImages);
@@ -282,14 +309,14 @@ public class BoardService {
 
     public BoardResponse deleteBoard(Long postId, User user) {
         // 1. 기존 게시글 조회
-        Board board = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(postId).orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
 
         // 2. 작성자인지 확인
         if (user == null)
-            throw new RuntimeException("User cannot be null");
+            throw new BaseException(FailureStatus._UNAUTHORIZED);
 
         if (!board.getUser().getUserId().equals(user.getUserId()))
-            throw new SecurityException("수정 권한이 없습니다.");
+            throw new BaseException(FailureStatus.FORBIDDEN);
 
         // s3에서 삭제
         List<Image> images = board.getImages();

@@ -8,8 +8,10 @@ import com.Solux.UniTrip.dto.request.RatingRequest;
 import com.Solux.UniTrip.dto.response.*;
 import com.Solux.UniTrip.entity.BoardType;
 import com.Solux.UniTrip.entity.Place;
+import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.service.BoardService;
 import com.Solux.UniTrip.common.apiPayload.status.FailureStatus;
+import com.Solux.UniTrip.service.KeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final KeywordService keywordService;
+    private final BoardRepository boardRepository;
 
     // 리뷰 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -40,7 +44,6 @@ public class BoardController {
     // 리뷰 조회(청춘카드)
     @GetMapping
     public ResponseEntity<BoardListResponse> getAllReviews(@AuthenticationPrincipal User user) {
-        System.out.println("user: "+user);
         BoardListResponse response = boardService.getAllCard(user);
         return ResponseEntity.ok(response);
     }
@@ -55,7 +58,15 @@ public class BoardController {
     // 리뷰 상세 조회
     @GetMapping("/{postId}")
     public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId, @AuthenticationPrincipal User user) {
-        BoardItemResponse response = boardService.getBoardById(postId, user);
+        BoardItemResponse response = boardService.getBoardById(postId, user, true);
+        return ResponseEntity.ok(response);
+    }
+
+    // 리뷰 추천 조회
+    @GetMapping("/recommend")
+    public ResponseEntity<BoardItemResponse> getRecommendBoard() {
+        Long randomId = boardRepository.findRandomPostId();  // ← 여기서 랜덤 postId 가져옴
+        BoardItemResponse response = boardService.getBoardById(randomId, null, false);
         return ResponseEntity.ok(response);
     }
 
@@ -86,6 +97,9 @@ public class BoardController {
             @RequestHeader ("Authorization") String token,
             @RequestParam String keyword
     ) {
+        // 검색 키워드 카운트 증가
+        keywordService.increaseSearchCount(keyword);
+
         List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
