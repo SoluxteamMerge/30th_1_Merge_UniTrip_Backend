@@ -136,9 +136,14 @@ public class BoardService {
     }
 
     // 단건 조회
-    public BoardItemResponse getBoardById(Long postId, User user) {
+    @Transactional
+    public BoardItemResponse getBoardById(Long postId, User user, boolean increaseView) {
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
+
+        if (increaseView)
+            board.setViews(board.getViews() + 1);
+
         return convertToBoardItemResponse(board, user);
     }
 
@@ -179,6 +184,7 @@ public class BoardService {
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())
                 .commentCount(0)
+                .views(board.getViews())
                 .likes(likes.intValue())
                 .scrapCount(scraps.intValue())
                 .isLiked(isLiked)

@@ -58,7 +58,7 @@ public class BoardController {
     // 리뷰 상세 조회
     @GetMapping("/{postId}")
     public ResponseEntity<BoardItemResponse> getBoardById(@PathVariable Long postId, @AuthenticationPrincipal User user) {
-        BoardItemResponse response = boardService.getBoardById(postId, user);
+        BoardItemResponse response = boardService.getBoardById(postId, user, true);
         return ResponseEntity.ok(response);
     }
 
@@ -66,7 +66,7 @@ public class BoardController {
     @GetMapping("/recommend")
     public ResponseEntity<BoardItemResponse> getRecommendBoard() {
         Long randomId = boardRepository.findRandomPostId();  // ← 여기서 랜덤 postId 가져옴
-        BoardItemResponse response = boardService.getBoardById(randomId, null);
+        BoardItemResponse response = boardService.getBoardById(randomId, null, false);
         return ResponseEntity.ok(response);
     }
 

@@ -19,6 +19,7 @@ public class BoardItemResponse {
     private String nickname;
     private String createdAt;
     private int commentCount;
+    private int views;
     private int likes;
     private int scraps;
     private boolean isLiked;
