@@ -20,6 +20,7 @@ public class BoardItemResponse {
     private String createdAt;
     private int commentCount;
     private int views;
+    private double rating;
     private int likes;
     private int scraps;
     private boolean isLiked;

@@ -174,6 +174,22 @@ public class BoardService {
                     .isPresent();
         }
 
+        List<Image> images = board.getImages();
+        String imageUrl = (images != null && !images.isEmpty()) ? images.get(0).getImageUrl() : null;
+
+        // 평균 평점 계산
+        List<Rating> ratings = board.getRatings();
+        double averageRating = 0.0;
+        if (ratings != null && !ratings.isEmpty()) {
+            averageRating = ratings.stream()
+                    .mapToDouble(Rating::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            // 소수점 첫째 자리로 반올림
+            averageRating = Math.round(averageRating * 10) / 10.0;
+        }
+
         BoardItemResponse.BoardItemResponseBuilder builder = BoardItemResponse.builder()
                 .postId(board.getPostId())
                 .boardType(board.getBoardType().toString())
@@ -183,13 +199,13 @@ public class BoardService {
                 .userId(board.getUser().getUserId())
                 .nickname(board.getUser().getNickname())
                 .createdAt(board.getCreatedAt().toString())
-                .commentCount(0)
                 .views(board.getViews())
+                .rating(averageRating)
                 .likes(likes.intValue())
                 .scrapCount(scraps.intValue())
                 .isLiked(isLiked)
                 .isScraped(isScraped)
-                .imageUrl("")
+                .imageUrl(imageUrl)
                 .placeName(board.getPlace().getPlaceName())
                 .address(board.getPlace().getAddress())
                 .kakaoId(board.getPlace().getKakaoId())
