@@ -62,6 +62,10 @@ public class Board {
     @JoinColumn(name = "place_id")
     private Place place;
 
+    // Rating 엔티티 매핑
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Rating> ratings;
+
     public Board(BoardRequest request, User user, PostCategory category, List<Image> images, Place place) {
         this.boardType = BoardType.valueOf(request.getBoardType());
         this.category = category;
