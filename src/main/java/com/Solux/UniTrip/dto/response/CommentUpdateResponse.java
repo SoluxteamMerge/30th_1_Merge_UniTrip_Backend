@@ -1,6 +1,5 @@
 package com.Solux.UniTrip.dto.response;
 //댓글 수정 response dto
-//백다현
 
 import lombok.Builder;
 import lombok.Getter;

@@ -127,7 +127,7 @@ public class CommentService {
 
         return CommentLikeResponse.builder()
                 .commentId(commentId)
-                .isLiked(isLiked)
+                .liked(isLiked)
                 .likeCount(comment.getLikeCount())
                 .build();
     }
