@@ -30,12 +30,12 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
                     config.setAllowedOrigins(List.of(
-                            "http://localhost:3000",
-                            "http://13.125.247.45:3000",
-                            "http://192.168.0.17:3000",
-                            
+                            //개발용
                             "http://localhost:5173",
-                            "http://13.125.247.45:5173"
+                            "http://15.164.170.105:5173",
+
+                            //배포 도메인
+                            "https://unitrip.duckdns.org"
                     ));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
