@@ -82,6 +82,10 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            exception.printStackTrace(); // 콘솔에 예외 출력
+                            response.sendRedirect("https://unitrip.duckdns.org/oauth2/success?error=true");
+                        })
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
                 )
