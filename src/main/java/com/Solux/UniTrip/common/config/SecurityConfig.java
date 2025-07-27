@@ -34,7 +34,7 @@ public class SecurityConfig {
                     config.setAllowedOrigins(List.of(
                             //개발용
                             "http://localhost:5173",
-                            "http://15.164.170.105:5173",
+                            "http://52.79.206.60:5173",
 
                             //배포 도메인
                             "https://unitrip.duckdns.org"
