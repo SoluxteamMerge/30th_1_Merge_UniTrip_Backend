@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                                         // 리뷰 GET만 예외
                                         path.equals("/api/reviews") ||
+                                        path.equals("/api/reviews/recommend") ||
                                         path.matches("^/api/reviews\\?boardType=.*$") ||
                                         path.matches("^/api/reviews/\\d+$") ||
                                         path.startsWith("/api/reviews/search") ||
