@@ -7,9 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "comments")
 @Getter
@@ -26,9 +30,10 @@ public class Comment {
     private Long postId;
 
     @Column(name = "user_id")
-    private Long userId;  // 로그인 개발되면 이 부분 연동
+    private Long userId;
 
-    @Column(name = "created_at")
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Lob
@@ -38,6 +43,7 @@ public class Comment {
     @Column(name = "like_count")
     private int likeCount = 0;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -45,8 +51,6 @@ public class Comment {
         this.postId = postId;
         this.userId = userId;
         this.content = content != null ? content : "";
-        this.createdAt = LocalDateTime.now();
-        this.likeCount = 0;
     }
 
     //댓글 수정 메소드

@@ -17,6 +17,7 @@ public class BoardItemResponse {
     private String content;
     private Long userId;
     private String nickname;
+    private String profileImageUrl;
     private String createdAt;
     private int commentCount;
     private int views;

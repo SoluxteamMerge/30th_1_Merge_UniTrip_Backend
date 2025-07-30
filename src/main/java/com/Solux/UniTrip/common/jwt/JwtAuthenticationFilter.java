@@ -49,8 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         // GET만 허용되는 경로
                         ("GET".equals(method) && (
                                 path.startsWith("/api/comments") ||
-                                        path.equals("/api/schedules") ||
-                                        path.matches("^/api/schedules/\\d+$") ||
                                         path.equals("/api/keywords/popular") ||
 
                                         // 리뷰 GET만 예외
@@ -69,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         path.equals("/api/user/email/verify");
 
         if (isPublicPath) {
-            // ✅ 토큰이 있으면 무조건 인증 처리
+            // 토큰이 있으면 무조건 인증 처리
             tryAuthenticateIfTokenPresent(request);
             filterChain.doFilter(request, response);
             return;

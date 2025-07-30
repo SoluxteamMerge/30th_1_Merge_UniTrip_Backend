@@ -16,6 +16,8 @@ public class BoardRequest {
     private String kakaoId;
     private String categoryGroupName;
     private String region;
+    private Float lat;
+    private Float lng;
 
     private Boolean overnightFlag;
     private Integer recruitmentCnt;
