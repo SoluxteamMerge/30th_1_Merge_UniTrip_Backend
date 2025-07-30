@@ -98,6 +98,7 @@ public class UserService {
         }
 
         String email = jwtTokenProvider.getEmailFromToken(token);
+        System.out.println("✅ 이메일: " + email);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
         return new UserProfileResponse(
                 user.getName(),

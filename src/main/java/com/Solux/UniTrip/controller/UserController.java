@@ -111,7 +111,6 @@ public class UserController {
     }
 
     //스크랩한 리뷰 조회
-    // 스크랩한 리뷰 조회
     @GetMapping("/scraps")
     public ApiResponse<List<ReviewResultResponse>> getScraps(
             @RequestHeader("Authorization") String token
