@@ -2,6 +2,7 @@ package com.Solux.UniTrip.dto.response;
 
 import com.Solux.UniTrip.entity.Place;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.*;
 
 @Getter
@@ -25,12 +26,22 @@ public class PlaceResponse {
     @JsonProperty("category_group_name")
     private String categoryGroupName;
 
+    @JsonProperty("lng")
+    private float lng;
+
+    @JsonProperty("lat")
+    private float lat;
+    @Column(nullable = false)
+
+
     public static PlaceResponse from(Place place) {
         return PlaceResponse.builder()
                 .placeName(place.getPlaceName())
                 .address(place.getAddress())
                 .categoryGroupName(place.getCategoryGroupName())
                 .region(place.getRegion())
+                .lat(place.getLat())
+                .lng(place.getLng())
                 .build();
     }
 }

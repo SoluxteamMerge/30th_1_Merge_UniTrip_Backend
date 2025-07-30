@@ -25,11 +25,11 @@ public class Place {
     @Column(nullable = false)
     private String address;
 
-//    @Column(nullable = false)
-//    private float lat;
-//
-//    @Column(nullable = false)
-//    private float lng;
+    @Column(nullable = false)
+    private float lat;
+
+    @Column(nullable = false)
+    private float lng;
 
     @Column(name="kakao_id", nullable = false)
     private String kakaoId;
