@@ -99,7 +99,13 @@ public class UserService {
 
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
-        return new UserProfileResponse(user.getName(), user.getNickname(), user.getPhoneNumber(), user.getUserType(), user.isEmailVerified());
+        return new UserProfileResponse(
+                user.getName(),
+                user.getNickname(),
+                user.getPhoneNumber(),
+                user.getUserType(),
+                user.isEmailVerified(),
+                user.getProfileImageUrl());
     }
 
     //사용자 정보 수정
