@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlaceService {
@@ -133,6 +135,8 @@ public class PlaceService {
             if (region == null) {
                 region = Place.Region.ETC;
             }
+
+            log.debug(">>> 주소: {}, region: {}", address, region);
 
             PlaceResponse place = PlaceResponse.builder()
                     .placeName(obj.getString("place_name"))
