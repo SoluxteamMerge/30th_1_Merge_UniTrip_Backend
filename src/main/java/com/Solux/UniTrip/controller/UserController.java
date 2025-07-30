@@ -154,9 +154,9 @@ public class UserController {
             @RequestHeader("Authorization") String token,
             @RequestParam("image") MultipartFile imagefile
     ) {
-        System.out.println("imagefile is null? " + (imagefile == null));
-        System.out.println("imagefile.isEmpty()? " + (imagefile != null && imagefile.isEmpty()));
-        System.out.println("imagefile original filename: " + (imagefile != null ? imagefile.getOriginalFilename() : "null"));
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
 
         ProfileImageResponse profileImageUrl = userService.uploadProfileImage(token, imagefile);
         return ApiResponse.onSuccess(profileImageUrl, SuccessStatus._PROFILEIMAGE_UPLOAD_SUCCESS);
