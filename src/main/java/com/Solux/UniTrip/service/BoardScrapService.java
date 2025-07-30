@@ -37,9 +37,17 @@ public class BoardScrapService {
                     .user(user)
                     .build();
             boardScarpRepository.save(newScrap);
+
+            // 스크랩 수 증가
+            board.setScraps(board.getScraps() + 1);
+
             message = "북마크를 눌렀습니다.";
         } else {
             boardScarpRepository.delete(existingScrap);
+
+            // 스크랩 수 감소
+            board.setScraps(board.getScraps() - 1);
+
             message = "북마크를 취소했습니다.";
         }
 

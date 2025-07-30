@@ -16,8 +16,8 @@ public class ReviewResultResponse {
     private Long postId;
     private String postTitle;
     private Double rating;
-    private Integer likeCount;
-    private Integer scrapCount;
+    private int likeCount;
+    private int scrapCount;
     private String categoryName;
 
     public static ReviewResultResponse from(Board board) {

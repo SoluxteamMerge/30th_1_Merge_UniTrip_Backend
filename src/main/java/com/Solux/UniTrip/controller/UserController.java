@@ -156,12 +156,9 @@ public class UserController {
             @RequestHeader("Authorization") String token,
             @RequestParam("image") MultipartFile imagefile
     ) {
-        log.info("🔐 Authorization Header: {}", token);
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        log.info("🧪 JWT token after removing Bearer: {}", token);
-
 
         ProfileImageResponse profileImageUrl = userService.uploadProfileImage(token, imagefile);
         return ApiResponse.onSuccess(profileImageUrl, SuccessStatus._PROFILEIMAGE_UPLOAD_SUCCESS);

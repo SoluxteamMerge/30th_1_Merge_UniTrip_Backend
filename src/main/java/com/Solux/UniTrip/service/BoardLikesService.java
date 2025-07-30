@@ -42,10 +42,20 @@ public class BoardLikesService {
                     .status(true)  // status 필드는 항상 true로 저장
                     .build();
             boardLikesRepository.save(newLike);
+
+            // Board.likes 증가
+            board.setLikes(board.getLikes() + 1);
+            boardRepository.save(board);
+
             message = "좋아요를 눌렀습니다.";
         } else {
             // 좋아요 취소 → DB에서 삭제
             boardLikesRepository.delete(existingLike);
+
+            // Board.likes 감소
+            board.setLikes(board.getLikes() - 1);
+            boardRepository.save(board);
+
             message = "좋아요를 취소했습니다.";
         }
 
