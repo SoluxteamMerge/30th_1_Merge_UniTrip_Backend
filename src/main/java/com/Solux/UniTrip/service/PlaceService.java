@@ -140,6 +140,8 @@ public class PlaceService {
                     .kakaoId(Integer.parseInt(obj.getString("id")))
                     .categoryGroupName(obj.getString("category_group_name"))
                     .region(region)
+                    .lat(Float.parseFloat(obj.getString("y")))
+                    .lng(Float.parseFloat(obj.getString("x")))
                     .build();
 
             results.add(place);
