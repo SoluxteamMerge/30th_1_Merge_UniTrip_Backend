@@ -37,7 +37,7 @@ public class Place {
     @Column(name="category_group_name")
     private String categoryGroupName;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     private Region region;
 
