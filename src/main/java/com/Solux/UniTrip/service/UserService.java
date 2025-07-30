@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -170,22 +171,26 @@ public class UserService {
                 .toList();
     }
 
-    //스크랩한 리뷰 조회
+    // 스크랩한 리뷰 조회
     @Transactional(readOnly = true)
-    public List<ScrapResponse> getScraps(String token) {
+    public List<ReviewResultResponse> getScraps(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new IllegalArgumentException("Invalid Token");
         }
         String email = jwtTokenProvider.getEmailFromToken(token);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
-        //스크랩 목록 가져오기
+        // 스크랩 목록 가져오기
         List<Scrap> scraps = scrapRepository.findAllByUser(user);
 
         return scraps.stream()
-                .map(scrap -> ScrapResponse.from(scrap.getBoard()))
+                .map(Scrap::getBoard)
+                .filter(Objects::nonNull)
+                .map(ReviewResultResponse::from)
                 .toList();
     }
+
 
     //  이메일 인증 코드 저장소 (임시 Map)
     private final Map<String, VerificationInfo> verificationStorage = new ConcurrentHashMap<>();

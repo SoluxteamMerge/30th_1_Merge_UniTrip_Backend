@@ -111,20 +111,21 @@ public class UserController {
     }
 
     //스크랩한 리뷰 조회
+    // 스크랩한 리뷰 조회
     @GetMapping("/scraps")
-    public ApiResponse<List<ScrapResponse>> getScraps(
+    public ApiResponse<List<ReviewResultResponse>> getScraps(
             @RequestHeader("Authorization") String token
-    ){
+    ) {
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-        List<ScrapResponse> scraps = userService.getScraps(accessToken);
+        List<ReviewResultResponse> scraps = userService.getScraps(accessToken);
 
-        //아직 스크랩한 리뷰가 없는 경우
         if (scraps.isEmpty()) {
-            return ApiResponse.onSuccess(null,SuccessStatus._SCRAPS_LIST_EMPTY);
+            return ApiResponse.onSuccess(null, SuccessStatus._SCRAPS_LIST_EMPTY);
         }
 
         return ApiResponse.onSuccess(scraps, SuccessStatus._GET_SCRAPS_SUCCESS);
     }
+
 
     //회원 탈퇴
     @DeleteMapping("/signout")
