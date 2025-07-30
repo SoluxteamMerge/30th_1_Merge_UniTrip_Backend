@@ -157,13 +157,11 @@ public class TravelScheduleService {
 
     //일정 목록 조회
     @Transactional(readOnly = true)
-    public PageResponse<ScheduleListResponse> getScheduleList(Pageable pageable) {
-        Page<TravelSchedule> schedules = travelScheduleRepository.findAll(pageable);
+    public PageResponse<ScheduleListResponse> getScheduleList(User user, Pageable pageable) {
+        Page<TravelSchedule> schedules = travelScheduleRepository.findAllByUser(user, pageable);
         Page<ScheduleListResponse> dtoPage = schedules.map(ScheduleListResponse::from);
         return PageResponse.from(dtoPage);
     }
-
-
 
 
 }

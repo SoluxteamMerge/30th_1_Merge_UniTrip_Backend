@@ -81,6 +81,8 @@ public class BoardService {
                 .kakaoId(request.getKakaoId())
                 .categoryGroupName(request.getCategoryGroupName())
                 .region(Place.Region.from(request.getRegion()))
+                .lat(request.getLat())
+                .lng(request.getLng())
                 .build();
 
         Place savedPlace = placeRepository.save(place);
