@@ -13,6 +13,7 @@ import com.Solux.UniTrip.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -154,6 +156,13 @@ public class UserController {
             @RequestHeader("Authorization") String token,
             @RequestParam("image") MultipartFile imagefile
     ) {
+        log.info("🔐 Authorization Header: {}", token);
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        log.info("🧪 JWT token after removing Bearer: {}", token);
+
+
         ProfileImageResponse profileImageUrl = userService.uploadProfileImage(token, imagefile);
         return ApiResponse.onSuccess(profileImageUrl, SuccessStatus._PROFILEIMAGE_UPLOAD_SUCCESS);
     }
