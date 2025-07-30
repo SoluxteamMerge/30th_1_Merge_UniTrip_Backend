@@ -201,6 +201,7 @@ public class BoardService {
                 .content(board.getContent())
                 .userId(board.getUser().getUserId())
                 .nickname(board.getUser().getNickname())
+                .profileImageUrl(board.getUser().getProfileImageUrl())
                 .createdAt(board.getCreatedAt().toString())
                 .views(board.getViews())
                 .rating(averageRating)
