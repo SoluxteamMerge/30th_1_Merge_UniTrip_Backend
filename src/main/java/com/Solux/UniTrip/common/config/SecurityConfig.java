@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/schedules", "/api/schedules/*","/api/keywords/popular").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/keywords/popular").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/comments", "/api/reviews/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**", "/oauth2/success", "/google/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/keywords/rank","/api/user/email/**").permitAll()
@@ -72,7 +72,10 @@ public class SecurityConfig {
                                 "/api/reviews/**"
                         ).authenticated()
 
-                        //보호경로
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/schedules",
+                                "/api/schedules/*").authenticated()
+
                         .requestMatchers(
                                 "/api/comments/**",
                                 "/api/place/search",
