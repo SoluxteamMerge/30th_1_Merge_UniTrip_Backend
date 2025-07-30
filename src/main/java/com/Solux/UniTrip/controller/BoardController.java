@@ -43,9 +43,9 @@ public class BoardController {
 
     // 리뷰 조회(청춘카드)
     @GetMapping
-    public ResponseEntity<BoardListResponse> getAllReviews(@AuthenticationPrincipal User user) {
-        BoardListResponse response = boardService.getAllCard(user);
-        return ResponseEntity.ok(response);
+    public ApiResponse<List<ReviewResultResponse>> getAllReviews(@AuthenticationPrincipal User user) {
+        List<ReviewResultResponse> allReview =  boardService.getAllCard(user);
+        return ApiResponse.onSuccess(allReview, SuccessStatus._GET_ALL_REVIEWS_SUCCESS);
     }
 
     // 리뷰 조회(게시판별)

@@ -125,10 +125,13 @@ public class BoardService {
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
     }
 
-    public BoardListResponse getAllCard(User user) {
+    public List<ReviewResultResponse> getAllCard(User user) {
         List<Board> boards = boardRepository.findAll();
-        return convertToBoardListResponse(boards, user);
+        return boards.stream()
+                .map(ReviewResultResponse::from)
+                .collect(Collectors.toList());
     }
+
 
     public BoardListResponse getCardsByBoardType(BoardType boardType, User user) {
         List<Board> boards = boardRepository.findByBoardType(boardType);

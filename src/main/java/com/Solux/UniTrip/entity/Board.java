@@ -55,6 +55,7 @@ public class Board {
 
     //Image 엔티티 매핑
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<Image> images = new ArrayList<>();
 
     // Place 엔티티 매핑
