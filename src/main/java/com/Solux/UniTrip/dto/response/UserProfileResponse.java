@@ -22,6 +22,6 @@ public class UserProfileResponse {
         this.userType = userType;
         this.emailVerified = emailVerified;
         this.isProfileRegistered = !nickname.equals("defaultNickname");
-        this.profileImageUrl = getProfileImageUrl();
+        this.profileImageUrl = profileImageUrl;
     }
 }
