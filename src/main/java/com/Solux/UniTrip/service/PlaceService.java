@@ -134,6 +134,8 @@ public class PlaceService {
                 region = Place.Region.ETC;
             }
 
+            System.out.println(">>> 주소: " + address + ", region: " + region);
+
             PlaceResponse place = PlaceResponse.builder()
                     .placeName(obj.getString("place_name"))
                     .address(address)
