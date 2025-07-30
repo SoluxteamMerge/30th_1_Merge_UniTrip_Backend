@@ -8,9 +8,11 @@ import com.Solux.UniTrip.dto.response.CommentResponse;
 import com.Solux.UniTrip.dto.request.CommentUpdateRequest;
 import com.Solux.UniTrip.dto.response.CommentUpdateResponse;
 import com.Solux.UniTrip.dto.response.PageResponse;
+import com.Solux.UniTrip.entity.Board;
 import com.Solux.UniTrip.entity.Comment;
 import com.Solux.UniTrip.entity.CommentLikes;
 import com.Solux.UniTrip.entity.User;
+import com.Solux.UniTrip.repository.BoardRepository;
 import com.Solux.UniTrip.repository.CommentLikeRepository;
 import com.Solux.UniTrip.repository.CommentRepository;
 import com.Solux.UniTrip.repository.UserRepository;
@@ -33,30 +35,30 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
 
 
     // 댓글 생성
+    @Transactional
     public CommentResponse createComment(CommentCreateRequest dto, Long userId) {
         if (dto == null || dto.getContent() == null ||
                 dto.getContent().trim().isEmpty()) {
             throw new BaseException(FailureStatus._BAD_REQUEST);
         }
 
-        // 실제로는 Post 존재 여부를 확인해야 함
-        boolean postExists = true; // TODO: Post 존재 체크
-        if (!postExists) {
-            throw new BaseException(FailureStatus._POST_NOT_FOUND);
-        }
+        Board board = boardRepository.findById(dto.getPostId())
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
         Comment comment = new Comment(
-                1L, // postId 하드코딩
+                board.getPostId(),
                 userId,
                 dto.getContent()
         );
 
+        board.setCommentCount(board.getCommentCount() + 1);
         Comment saved = commentRepository.save(comment);
 
         return CommentResponse.builder()
@@ -102,7 +104,14 @@ public class CommentService {
             throw new BaseException(FailureStatus._UNAUTHORIZED);
         }
 
+        Board board = boardRepository.findById(comment.getPostId())
+                .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
+
         commentRepository.delete(comment);
+
+        int currentCount = board.getCommentCount();
+        board.setCommentCount(Math.max(0, currentCount - 1));
+        boardRepository.save(board);
     }
 
     //댓글 좋아요 등록/삭제
