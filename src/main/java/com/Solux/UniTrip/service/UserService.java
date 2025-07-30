@@ -51,7 +51,7 @@ public class UserService {
 
     //사용자 정보 등록
     @Transactional
-    public void registerProfile(String token, UserProfileRequest request) {
+    public boolean registerProfile(String token, UserProfileRequest request) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new IllegalStateException(("Invalid Token"));
         }
@@ -59,9 +59,9 @@ public class UserService {
         String email = jwtTokenProvider.getEmailFromToken(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BaseException(FailureStatus._USER_NOT_FOUND));
 
-        //이미 등록된 닉네임
+        // 닉네임이 이미 등록된 경우
         if (!user.getNickname().equals("defaultNickname")) {
-            throw new BaseException(FailureStatus._PROFILE_ALREADY_REGISTERED);
+            return false;
         }
 
         //user 엔티티에 변경 상태 업데이트 요철
@@ -71,6 +71,7 @@ public class UserService {
                 User.UserType.valueOf(request.getUserType().toUpperCase()),
                 request.isEmailVerified()
         );
+        return true;
     }
 
     //닉네임 중복 확인

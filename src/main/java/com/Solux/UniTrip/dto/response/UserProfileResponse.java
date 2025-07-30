@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UserProfileResponse {
+    private boolean isProfileRegistered;
     private String name;
     private String nickname;
     private String phoneNumber;
@@ -19,5 +20,6 @@ public class UserProfileResponse {
         this.phoneNumber = phoneNumber;
         this.userType = userType;
         this.emailVerified = emailVerified;
+        this.isProfileRegistered = !nickname.equals("defaultNickname");
     }
 }
