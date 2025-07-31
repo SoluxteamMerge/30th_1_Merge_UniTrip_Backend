@@ -34,7 +34,9 @@ public class TravelScheduleController {
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody ScheduleCreateRequest request
     ) {
-        String token = authorizationHeader.trim();
+        String token = authorizationHeader.startsWith("Bearer ") ?
+                authorizationHeader.substring(7).trim() : authorizationHeader.trim();
+        
         String email = jwtTokenProvider.getEmailFromToken(token); // 헤더에서 email 추출
         ScheduleResponse response = travelScheduleService.createSchedule(request, email);
         return ResponseEntity.status(201).body(
