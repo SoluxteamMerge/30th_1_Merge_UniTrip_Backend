@@ -277,6 +277,12 @@ public class BoardService {
             board.getImages().addAll(newImages);
         }
 
+        // 장소 수정
+        Place newPlace = placeRepository.findByPlaceName(request.getPlaceName())
+                .orElseThrow(() -> new BaseException(FailureStatus._PLACE_NOT_FOUND));
+        board.setPlace(newPlace);
+
+
         // 4. 수정된 게시글을 저장 (JPA에서는 트랜잭션 끝나면 자동 반영)
         // boardRepository.save(board); // 필요없음.
 

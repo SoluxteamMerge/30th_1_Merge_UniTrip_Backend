@@ -74,10 +74,12 @@ public class BoardController {
     @PatchMapping("/{postId}")
     public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long postId,
-            @RequestBody BoardRequest request,
-            @AuthenticationPrincipal User user, @RequestPart(value = "images", required = false) List<MultipartFile> images
+            @RequestPart("boardRequest") BoardRequest request,
+            @AuthenticationPrincipal User user,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
 
             ) {
+
         BoardResponse response = boardService.updateBoard(postId, request, user, images);
         return ResponseEntity.ok(response);
     }
