@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class KeywordRanking {
 
     @Id
-    @Column(name = "keyword_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "keyword_id")
     private Long keywordId;
 
     @Column(name = "keyword", nullable = false, length = 100)
