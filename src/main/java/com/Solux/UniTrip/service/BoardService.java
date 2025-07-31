@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final PostCategoryRepository categoryRepository;
-    private final GroupRecruitBoardRepository groupRecruitBoardRepository;
     private final BoardLikesRepository boardLikesRepository;
     private final BoardScarpRepository boardScarpRepository;
     private final PlaceRepository placeRepository;
