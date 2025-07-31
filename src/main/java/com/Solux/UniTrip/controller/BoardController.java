@@ -103,7 +103,7 @@ public class BoardController {
         // 검색 키워드 카운트 증가
         keywordService.increaseSearchCount(keyword);
 
-        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token, sort);
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, accessToken, sort);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
 
