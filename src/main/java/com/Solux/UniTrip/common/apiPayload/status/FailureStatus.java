@@ -38,8 +38,6 @@ public enum FailureStatus implements Basecode {
     _BOARDTYPE_NOT_NULL(400, "BoardType must not be empty"),
     _INVAILD_BOARDTYPE(400, "Invalid BoardType"),
     _CATEGORY_NOT_NULL(400, "Category name must not be empty"),
-    _OVERNIGHT_NOT_NULL(400,"overnightFlag must not be null for 모임구인 type"),
-    _RECRUITMENTCNT_NOT_NULL(400, "recruitmentCnt must not be null for 모임구인 type"),
     _CATEGORY_NOT_FOUND(400, "카테고리를 찾을 수 없습니다.");
 
 

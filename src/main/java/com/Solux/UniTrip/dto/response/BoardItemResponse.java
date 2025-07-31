@@ -27,8 +27,6 @@ public class BoardItemResponse {
     private boolean isLiked;
     private boolean isScraped;
     private String imageUrl;
-    private Boolean overnightFlag;
-    private Integer recruitmentCnt;
     private String placeName;
     private String address;
     private String kakaoId;
