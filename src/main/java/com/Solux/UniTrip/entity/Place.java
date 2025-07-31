@@ -66,7 +66,7 @@ public class Place {
             try {
                 return Region.valueOf(value.toUpperCase());
             } catch (Exception e) {
-                return Region.ETC;
+                throw new IllegalArgumentException("Invalid region value: " + value);
             }
         }
     }

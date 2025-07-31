@@ -357,6 +357,15 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    // 전체보기 조회
+    @Transactional(readOnly = true)
+    public List<ReviewResultResponse> getAllPlaces(String token){
+        List<Board> boards = boardRepository.findAll(); // 전체 조회
+        return boards.stream()
+                .map(ReviewResultResponse::from)
+                .collect(Collectors.toList());
+    }
+
     //별점 등록/삭제
     @Transactional
     public RatingResponse toggleRating(Long postId, Long userId, Double newRating) {

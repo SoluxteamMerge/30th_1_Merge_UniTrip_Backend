@@ -113,10 +113,15 @@ public class BoardController {
     @GetMapping("/filter")
     public ApiResponse<List<ReviewResultResponse>> getPlacesByRegion(
             @RequestHeader("Authorization") String token,
-            @RequestParam Place.Region region
+            @RequestParam(required = false) Place.Region region
     ){
         String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-        List<ReviewResultResponse> places = boardService.getPlacesByRegion(region, accessToken);
+        List<ReviewResultResponse> places;
+        if (region == null) { // region 파라미터 없으면 전체 조회
+            places = boardService.getAllPlaces(accessToken);
+        } else {
+            places = boardService.getPlacesByRegion(region, accessToken);
+        }
         return ApiResponse.onSuccess(places, SuccessStatus._PLACE_FILTERING_SUCCESS);
     }
 
