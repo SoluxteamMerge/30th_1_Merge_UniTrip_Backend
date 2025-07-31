@@ -105,16 +105,7 @@ public class BoardController {
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
 
-    // 인기 키워드로 검색 결과 조회
-    @GetMapping("/popular")
-    public ApiResponse<List<ReviewResultResponse>> searchPopularKeywords(
-            @RequestHeader("Authorization") String token,
-            @RequestParam String keyword,
-            @RequestParam(required = false, defaultValue = "popular") String sort
-    ){
-        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token, sort);
-        return ApiResponse.onSuccess(searchs, SuccessStatus._POPULAR_SEARCH_SUCCESS);
-    }
+
 
     // 장소별 필터링 결과 조회
     @GetMapping("/filter")
