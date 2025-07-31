@@ -115,7 +115,8 @@ public class BoardController {
             @RequestHeader("Authorization") String token,
             @RequestParam Place.Region region
     ){
-        List<ReviewResultResponse> places = boardService.getPlacesByRegion(region, token);
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        List<ReviewResultResponse> places = boardService.getPlacesByRegion(region, accessToken);
         return ApiResponse.onSuccess(places, SuccessStatus._PLACE_FILTERING_SUCCESS);
     }
 
