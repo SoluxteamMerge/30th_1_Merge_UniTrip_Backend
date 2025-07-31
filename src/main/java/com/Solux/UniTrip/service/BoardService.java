@@ -184,6 +184,7 @@ public class BoardService {
                 .nickname(board.getUser().getNickname())
                 .profileImageUrl(board.getUser().getProfileImageUrl())
                 .createdAt(board.getCreatedAt().toString())
+                .scheduleDate(board.getScheduleDate())
                 .views(board.getViews())
                 .rating(averageRating)
                 .likes(likes.intValue())

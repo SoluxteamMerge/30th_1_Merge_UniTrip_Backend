@@ -9,6 +9,7 @@ public class BoardRequest {
     private String categoryName;
     private String title;
     private String content;
+    private String scheduleDate;
     private String imageUrl;
 
     private String placeName;

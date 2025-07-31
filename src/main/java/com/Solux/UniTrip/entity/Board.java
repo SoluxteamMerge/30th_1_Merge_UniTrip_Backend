@@ -38,6 +38,9 @@ public class Board {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private String scheduleDate;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -74,6 +77,7 @@ public class Board {
         this.content = request.getContent();
         this.user = user;
         this.createdAt = LocalDateTime.now();  // 생성 시점에 createdAt 설정
+        this.scheduleDate = request.getScheduleDate();
         this.views = 0;
         this.likes = 0;
         this.scraps = 0;

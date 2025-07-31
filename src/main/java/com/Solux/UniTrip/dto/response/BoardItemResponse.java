@@ -19,6 +19,7 @@ public class BoardItemResponse {
     private String nickname;
     private String profileImageUrl;
     private String createdAt;
+    private String scheduleDate;
     private int commentCount;
     private int views;
     private double rating;
