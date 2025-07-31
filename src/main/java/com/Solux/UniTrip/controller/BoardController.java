@@ -98,6 +98,8 @@ public class BoardController {
             @RequestParam String keyword,
             @RequestParam(required = false, defaultValue = "popular") String sort
     ) {
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+
         // 검색 키워드 카운트 증가
         keywordService.increaseSearchCount(keyword);
 
