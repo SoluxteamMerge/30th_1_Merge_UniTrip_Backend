@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final PostCategoryRepository categoryRepository;
-    private final GroupRecruitBoardRepository groupRecruitBoardRepository;
     private final BoardLikesRepository boardLikesRepository;
     private final BoardScarpRepository boardScarpRepository;
     private final PlaceRepository placeRepository;
@@ -52,16 +51,6 @@ public class BoardService {
         String categoryName = request.getCategoryName();
         if (categoryName == null || categoryName.trim().isEmpty()) {
             throw new BaseException(FailureStatus._CATEGORY_NOT_NULL);
-        }
-
-        // boardType이 "모임구인"이면 추가 필드 검증
-        if (boardType == BoardType.모임구인) {
-            if (request.getOvernightFlag() == null) {
-                throw new BaseException(FailureStatus._OVERNIGHT_NOT_NULL);
-            }
-            if (request.getRecruitmentCnt() == null) {
-                throw new BaseException(FailureStatus._RECRUITMENTCNT_NOT_NULL);
-            }
         }
 
         // DB 조회
@@ -112,16 +101,6 @@ public class BoardService {
         }
         if (!images.isEmpty()) {
             imageRepository.saveAll(images);
-        }
-
-        // 모임구인 추가 정보 저장
-        if (boardType == BoardType.모임구인) {
-            GroupRecruitBoard groupRecruitBoard = new GroupRecruitBoard(
-                    savedBoard,
-                    request.getOvernightFlag(),
-                    request.getRecruitmentCnt()
-            );
-            groupRecruitBoardRepository.save(groupRecruitBoard);
         }
 
         return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
@@ -218,14 +197,6 @@ public class BoardService {
                 .categoryGroupName(board.getPlace().getCategoryGroupName())
                 .region(String.valueOf(board.getPlace().getRegion()));
 
-        if (BoardType.모임구인.equals(board.getBoardType())) {
-            groupRecruitBoardRepository.findById(board.getPostId())
-                    .ifPresent(groupRecruit -> {
-                        builder.overnightFlag(groupRecruit.getOvernightFlag());
-                        builder.recruitmentCnt(groupRecruit.getRecruitmentCnt());
-                    });
-        }
-
         return builder.build();
     }
 
@@ -280,16 +251,6 @@ public class BoardService {
                 request.getContent(),
                 category
         );
-
-        // 모임구인 게시판이면 GroupRecruitBoard 도 수정
-        if (BoardType.모임구인.equals(board.getBoardType())) {
-            GroupRecruitBoard groupRecruit = groupRecruitBoardRepository.findById(postId)
-                    .orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
-            groupRecruit.updateRecruitFields(
-                    request.getOvernightFlag(),
-                    request.getRecruitmentCnt()
-            );
-        }
 
         // 원래 이미지 삭제
         List<Image> existingImages = board.getImages();

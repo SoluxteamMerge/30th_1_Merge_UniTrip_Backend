@@ -19,7 +19,4 @@ public class BoardRequest {
     private Float lat;
     private Float lng;
 
-    private Boolean overnightFlag;
-    private Integer recruitmentCnt;
-
 }
