@@ -169,7 +169,8 @@ public class UserController {
     public ApiResponse<?> deleteProfileImage(
             @RequestHeader("Authorization") String token
     ){
-        userService.deleteProfileImage(token);
+        String accessToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        userService.deleteProfileImage(accessToken);
         return ApiResponse.onSuccess(null, SuccessStatus._PROFILEIMAGE_DELETE_SUCCESS);
     }
 
