@@ -95,12 +95,13 @@ public class BoardController {
     @GetMapping("/search")
     public ApiResponse<List<ReviewResultResponse>> searchResults(
             @RequestHeader ("Authorization") String token,
-            @RequestParam String keyword
+            @RequestParam String keyword,
+            @RequestParam(required = false, defaultValue = "popular") String sort
     ) {
         // 검색 키워드 카운트 증가
         keywordService.increaseSearchCount(keyword);
 
-        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token, sort);
         return ApiResponse.onSuccess(searchs, SuccessStatus._REVIEW_SEARCH_SUCCESS);
     }
 
@@ -108,9 +109,10 @@ public class BoardController {
     @GetMapping("/popular")
     public ApiResponse<List<ReviewResultResponse>> searchPopularKeywords(
             @RequestHeader("Authorization") String token,
-            @RequestParam String keyword
+            @RequestParam String keyword,
+            @RequestParam(required = false, defaultValue = "popular") String sort
     ){
-        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token);
+        List<ReviewResultResponse> searchs = boardService.searchResults(keyword, token, sort);
         return ApiResponse.onSuccess(searchs, SuccessStatus._POPULAR_SEARCH_SUCCESS);
     }
 

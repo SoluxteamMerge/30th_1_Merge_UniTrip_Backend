@@ -231,7 +231,7 @@ public class BoardService {
 
     //인기 키워드 검색 및 리뷰 검색
     @Transactional(readOnly = true)
-    public List<ReviewResultResponse> searchResults(String keyword, String token) {
+    public List<ReviewResultResponse> searchResults(String keyword, String token, String sort) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new IllegalArgumentException("Invalid Token");
         }
@@ -240,7 +240,16 @@ public class BoardService {
 
         String processedKeyword = "%" + keyword.trim().toLowerCase() + "%";
 
-        List<Board> boards = boardRepository.searchByKeyword(keyword);
+        List<Board> boards;
+
+        // sort 값에 따라 다르게 쿼리 호출
+        if ("popular".equalsIgnoreCase(sort)) {
+            boards = boardRepository.searchByKeywordOrderByLikesDesc(keyword);
+        } else if ("latest".equalsIgnoreCase(sort)) {
+            boards = boardRepository.searchByKeywordOrderByCreatedAtDesc(keyword);
+        } else {
+            boards = boardRepository.searchByKeyword(keyword); // 기본 검색 (정렬 없음)
+        }
 
         return boards.stream()
                 .map(ReviewResultResponse::from)
