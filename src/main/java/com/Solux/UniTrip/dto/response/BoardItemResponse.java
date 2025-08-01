@@ -19,6 +19,7 @@ public class BoardItemResponse {
     private String nickname;
     private String profileImageUrl;
     private String createdAt;
+    private String updatedAt;
     private String scheduleDate;
     private int commentCount;
     private int views;
@@ -34,4 +35,5 @@ public class BoardItemResponse {
     private String categoryGroupName;
     private String region;
     private int scrapCount;
+
 }
