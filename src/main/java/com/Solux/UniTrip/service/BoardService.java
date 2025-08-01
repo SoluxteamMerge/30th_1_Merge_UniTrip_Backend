@@ -229,9 +229,9 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-
+    //리뷰 수정
     @Transactional
-    public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
+    public BoardUpdateResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
         // 1. 게시글 조회
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -323,14 +323,12 @@ public class BoardService {
         // 8. 수정 시간은 @LastModifiedDate에 의해 자동 갱신됨
         boardRepository.save(board);
         // 9. 응답 반환
-        return new BoardResponse(
-                200,
-                postId,
-                "리뷰가 성공적으로 수정되었습니다.",
-                board.getUpdatedAt() != null
-                        ? board.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-                        : null
-        );
+        return BoardUpdateResponse.builder()
+                .status(200)
+                .postId(postId)
+                .message("리뷰가 성공적으로 수정되었습니다.")
+                .updatedAt(board.getUpdatedAt())
+                .build();
     }
 
 
