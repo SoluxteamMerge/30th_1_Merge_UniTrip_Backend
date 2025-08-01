@@ -33,7 +33,8 @@ public enum SuccessStatus implements Basecode {
     _GET_PROFILE_SUCCESS(200, "사용자 정보 조회에 성공하였습니다."),
     _RATING_REGISTERED(200, "별점이 등록되었습니다."),
     _RATING_DELETED(200, "별점이 삭제되었습니다."),
-    _GET_ALL_REVIEWS_SUCCESS(200, "청춘카드 조회에 성공하였습니다.");
+    _GET_ALL_REVIEWS_SUCCESS(200, "청춘카드 조회에 성공하였습니다."),
+    _BOARD_DELETED(200, "리뷰 삭제에 성공헀습니다");
 
 
     private final int code;

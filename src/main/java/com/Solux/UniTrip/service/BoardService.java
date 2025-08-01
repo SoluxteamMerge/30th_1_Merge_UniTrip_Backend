@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +104,7 @@ public class BoardService {
             imageRepository.saveAll(images);
         }
 
-        return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.");
+        return new BoardResponse(200, savedBoard.getPostId(), "리뷰가 성공적으로 작성되었습니다.", null);
     }
 
     public List<ReviewResultResponse> getAllCard(User user) {
@@ -322,12 +323,19 @@ public class BoardService {
         // 8. 수정 시간은 @LastModifiedDate에 의해 자동 갱신됨
 
         // 9. 응답 반환
-        return new BoardResponse(200, postId, "리뷰가 성공적으로 수정되었습니다.");
+        return new BoardResponse(
+                200,
+                postId,
+                "리뷰가 성공적으로 수정되었습니다.",
+                board.getUpdatedAt() != null
+                        ? board.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                        : null
+        );
     }
 
 
 
-    public BoardResponse deleteBoard(Long postId, User user) {
+    public void deleteBoard(Long postId, User user) {
         // 1. 기존 게시글 조회
         Board board = boardRepository.findById(postId).orElseThrow(() -> new BaseException(FailureStatus._POST_NOT_FOUND));
 
@@ -350,7 +358,6 @@ public class BoardService {
         // 3. 게시글 삭제
         boardRepository.delete(board);
 
-        return new BoardResponse(200, postId, "리뷰가 성공적으로 삭제되었습니다.");
     }
 
     // 장소별 필터링 결과 조회

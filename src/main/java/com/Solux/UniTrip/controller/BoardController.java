@@ -86,11 +86,11 @@ public class BoardController {
 
     // 리뷰 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<BoardResponse> deleteBoard(
+    public ApiResponse<Void> deleteBoard(
             @PathVariable Long postId,
             @AuthenticationPrincipal User user) {
-        BoardResponse response = boardService.deleteBoard(postId, user);
-        return ResponseEntity.ok(response);
+        boardService.deleteBoard(postId, user);
+        return ApiResponse.onSuccess(null, SuccessStatus._BOARD_DELETED);
     }
     
     // 리뷰 검색 결과 조회
