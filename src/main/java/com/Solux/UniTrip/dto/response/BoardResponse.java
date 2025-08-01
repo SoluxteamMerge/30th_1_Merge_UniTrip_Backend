@@ -9,4 +9,5 @@ public class BoardResponse {
     private int status;
     private Long postId;
     private String message;
+    private String updatedAt;
 }
