@@ -197,7 +197,9 @@ public class BoardService {
                 .address(board.getPlace().getAddress())
                 .kakaoId(board.getPlace().getKakaoId())
                 .categoryGroupName(board.getPlace().getCategoryGroupName())
-                .region(String.valueOf(board.getPlace().getRegion()));
+                .region(String.valueOf(board.getPlace().getRegion()))
+                .updatedAt(board.getUpdatedAt() != null ? board.getUpdatedAt().toString() : null);
+
 
         return builder.build();
     }
