@@ -43,7 +43,6 @@ public class Board {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -119,6 +118,7 @@ public class Board {
         if (category != null) {
             this.category = category;
         }
+        this.updatedAt = LocalDateTime.now();
     }
 
 
