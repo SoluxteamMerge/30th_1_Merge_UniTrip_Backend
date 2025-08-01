@@ -147,6 +147,8 @@ public class BoardService {
         Long likes = boardLikesRepository.countByBoardAndStatus(board, true);
         Long scraps = boardScarpRepository.countByBoard(board);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         // 기본값 false
         boolean isLiked = false;
         boolean isScraped = false;
@@ -198,8 +200,7 @@ public class BoardService {
                 .kakaoId(board.getPlace().getKakaoId())
                 .categoryGroupName(board.getPlace().getCategoryGroupName())
                 .region(String.valueOf(board.getPlace().getRegion()))
-                .updatedAt(board.getUpdatedAt() != null ? board.getUpdatedAt().toString() : null);
-
+                .updatedAt(board.getUpdatedAt() != null ? board.getUpdatedAt().format(formatter):null);
 
         return builder.build();
     }
