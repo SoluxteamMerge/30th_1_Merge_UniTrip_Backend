@@ -59,6 +59,6 @@ public class BoardLikesService {
             message = "좋아요를 취소했습니다.";
         }
 
-        return new BoardResponse(200, postId, message);
+        return new BoardResponse(200, postId, message,null);
     }
 }

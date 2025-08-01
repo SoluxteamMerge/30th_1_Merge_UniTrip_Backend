@@ -51,6 +51,6 @@ public class BoardScrapService {
             message = "북마크를 취소했습니다.";
         }
 
-        return new BoardResponse(200, postId, message);
+        return new BoardResponse(200, postId, message,null);
     }
 }
