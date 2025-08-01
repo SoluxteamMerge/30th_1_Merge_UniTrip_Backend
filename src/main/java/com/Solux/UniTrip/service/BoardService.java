@@ -231,16 +231,16 @@ public class BoardService {
 
     @Transactional
     public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
-        // 1. 기존 게시글 조회
+        // 1. 게시글 조회
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        // 2. 작성자인지 확인
+        // 2. 작성자 확인
         if (user == null) throw new BaseException(FailureStatus._UNAUTHORIZED);
         if (!board.getUser().getUserId().equals(user.getUserId()))
             throw new BaseException(FailureStatus.FORBIDDEN);
 
-        // 3. boardType과 categoryName: null이면 기존 값 유지
+        // 3. boardType과 categoryName 처리
         final BoardType resolvedBoardType =
                 (request.getBoardType() != null && !request.getBoardType().isBlank())
                         ? BoardType.valueOf(request.getBoardType().trim())
@@ -260,21 +260,26 @@ public class BoardService {
                     return categoryRepository.save(newCategory);
                 });
 
-        // 4. 공통 필드 업데이트
+        // 4. 필드 업데이트
         board.updateCommonFields(
                 request.getTitle() != null ? request.getTitle() : board.getTitle(),
                 request.getContent() != null ? request.getContent() : board.getContent(),
                 category
         );
 
-        // 5. 이미지 교체
+        // 5. 일정(scheduleDate) 업데이트
+        if (request.getScheduleDate() != null && !request.getScheduleDate().isBlank()) {
+            board.setScheduleDate(request.getScheduleDate());
+        }
+
+        // 6. 이미지 교체
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             // 기존 이미지 삭제
             List<Image> existingImages = board.getImages();
             for (Image image : existingImages) {
                 String imageUrl = image.getImageUrl();
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    s3Uploader.deleteFile(imageUrl); // S3에서 삭제
+                    s3Uploader.deleteFile(imageUrl);
                 }
             }
             board.getImages().clear();
@@ -290,8 +295,7 @@ public class BoardService {
             board.getImages().addAll(newImages);
         }
 
-
-        // 6. 장소 수정 여부 확인: placeName 없으면 유지
+        // 7. 장소 수정
         if (request.getPlaceName() != null && !request.getPlaceName().isBlank()) {
             Place currentPlace = board.getPlace();
             if (currentPlace == null || !currentPlace.getPlaceName().equals(request.getPlaceName())) {
@@ -306,7 +310,6 @@ public class BoardService {
                             if (request.getRegion() != null && !request.getRegion().isBlank()) {
                                 place.setRegion(Place.Region.valueOf(request.getRegion().toUpperCase().trim()));
                             }
-
                             if (request.getLat() != null) place.setLat(request.getLat());
                             if (request.getLng() != null) place.setLng(request.getLng());
 
@@ -316,9 +319,12 @@ public class BoardService {
             }
         }
 
-        // 7. 완료 응답
+        // 8. 수정 시간은 @LastModifiedDate에 의해 자동 갱신됨
+
+        // 9. 응답 반환
         return new BoardResponse(200, postId, "리뷰가 성공적으로 수정되었습니다.");
     }
+
 
 
     public BoardResponse deleteBoard(Long postId, User user) {

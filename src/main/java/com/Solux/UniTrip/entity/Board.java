@@ -4,6 +4,9 @@ import com.Solux.UniTrip.dto.request.BoardRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+
 public class Board {
 
     @Id
@@ -38,6 +43,11 @@ public class Board {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+
     @Column(nullable = false)
     private String scheduleDate;
 
@@ -55,6 +65,8 @@ public class Board {
 
     @Column(nullable = false)
     private int commentCount;
+
+
 
     //Image 엔티티 매핑
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
