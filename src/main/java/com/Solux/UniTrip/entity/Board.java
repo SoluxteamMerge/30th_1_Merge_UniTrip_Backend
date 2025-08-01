@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+
 public class Board {
 
     @Id
@@ -42,7 +42,7 @@ public class Board {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
