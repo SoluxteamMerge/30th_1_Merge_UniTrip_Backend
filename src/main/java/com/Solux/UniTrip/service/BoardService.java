@@ -232,28 +232,42 @@ public class BoardService {
     @Transactional
     public BoardResponse updateBoard(Long postId, BoardRequest request, User user, List<MultipartFile> multipartFiles) {
         // 1. 기존 게시글 조회
-        Board board = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         // 2. 작성자인지 확인
-        if (user == null)
-            throw new BaseException(FailureStatus._UNAUTHORIZED);
-
+        if (user == null) throw new BaseException(FailureStatus._UNAUTHORIZED);
         if (!board.getUser().getUserId().equals(user.getUserId()))
             throw new BaseException(FailureStatus.FORBIDDEN);
 
-        // 3. 내용 수정
-        // categoryName → 실제 Category 엔티티 찾아서 설정
-        PostCategory category = categoryRepository.findByBoardTypeAndCategoryName(board.getBoardType(), request.getCategoryName())
-                .orElseThrow(() -> new BaseException(FailureStatus._CATEGORY_NOT_FOUND));
+        // 3. boardType과 categoryName: null이면 기존 값 유지
+        final BoardType resolvedBoardType =
+                (request.getBoardType() != null && !request.getBoardType().isBlank())
+                        ? BoardType.valueOf(request.getBoardType().trim())
+                        : board.getCategory().getBoardType();
 
-        // 공통 필드 업데이트
+        final String resolvedCategoryName =
+                (request.getCategoryName() != null && !request.getCategoryName().isBlank())
+                        ? request.getCategoryName()
+                        : board.getCategory().getCategoryName();
+
+        PostCategory category = categoryRepository
+                .findByBoardTypeAndCategoryName(resolvedBoardType, resolvedCategoryName)
+                .orElseGet(() -> {
+                    PostCategory newCategory = new PostCategory();
+                    newCategory.setBoardType(resolvedBoardType);
+                    newCategory.setCategoryName(resolvedCategoryName);
+                    return categoryRepository.save(newCategory);
+                });
+
+        // 4. 공통 필드 업데이트
         board.updateCommonFields(
-                request.getTitle(),
-                request.getContent(),
+                request.getTitle() != null ? request.getTitle() : board.getTitle(),
+                request.getContent() != null ? request.getContent() : board.getContent(),
                 category
         );
 
-        // 원래 이미지 삭제
+        // 5. 이미지 교체
         List<Image> existingImages = board.getImages();
         for (Image image : existingImages) {
             String imageUrl = image.getImageUrl();
@@ -263,32 +277,46 @@ public class BoardService {
         }
         board.getImages().clear();
 
-        // 새 이미지 업로드
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             List<String> imageUrls = s3Uploader.uploadReviewImages(multipartFiles, "board");
-
             List<Image> newImages = new ArrayList<>();
             for (String url : imageUrls) {
                 Image image = new Image(board, url, user);
                 image.setUser(user);
                 newImages.add(image);
             }
-
             board.getImages().addAll(newImages);
         }
 
-        // 장소 수정
-        Place newPlace = placeRepository.findByPlaceName(request.getPlaceName())
-                .orElseThrow(() -> new BaseException(FailureStatus._PLACE_NOT_FOUND));
-        board.setPlace(newPlace);
+        // 6. 장소 수정 여부 확인: placeName 없으면 유지
+        if (request.getPlaceName() != null && !request.getPlaceName().isBlank()) {
+            Place currentPlace = board.getPlace();
+            if (currentPlace == null || !currentPlace.getPlaceName().equals(request.getPlaceName())) {
+                Place newPlace = placeRepository.findByPlaceName(request.getPlaceName())
+                        .orElseGet(() -> {
+                            Place place = new Place();
+                            place.setPlaceName(request.getPlaceName());
+                            place.setAddress(request.getAddress());
+                            place.setKakaoId(request.getKakaoId());
+                            place.setCategoryGroupName(request.getCategoryGroupName());
 
+                            if (request.getRegion() != null && !request.getRegion().isBlank()) {
+                                place.setRegion(Place.Region.valueOf(request.getRegion().toUpperCase().trim()));
+                            }
 
-        // 4. 수정된 게시글을 저장 (JPA에서는 트랜잭션 끝나면 자동 반영)
-        // boardRepository.save(board); // 필요없음.
+                            if (request.getLat() != null) place.setLat(request.getLat());
+                            if (request.getLng() != null) place.setLng(request.getLng());
 
-        // 5. 응답 DTO로 변환
+                            return placeRepository.save(place);
+                        });
+                board.setPlace(newPlace);
+            }
+        }
+
+        // 7. 완료 응답
         return new BoardResponse(200, postId, "리뷰가 성공적으로 수정되었습니다.");
     }
+
 
     public BoardResponse deleteBoard(Long postId, User user) {
         // 1. 기존 게시글 조회

@@ -98,9 +98,16 @@ public class Board {
         }
     }
     public void updateCommonFields(String title, String content, PostCategory category) {
-        this.title = title;
-        this.content = content;
-        this.category = category;
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+        if (category != null) {
+            this.category = category;
+        }
     }
+
 
 }
