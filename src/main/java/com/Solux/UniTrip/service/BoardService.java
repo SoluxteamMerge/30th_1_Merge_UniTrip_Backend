@@ -268,16 +268,18 @@ public class BoardService {
         );
 
         // 5. 이미지 교체
-        List<Image> existingImages = board.getImages();
-        for (Image image : existingImages) {
-            String imageUrl = image.getImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                s3Uploader.deleteFile(imageUrl); // S3에서 삭제
-            }
-        }
-        board.getImages().clear();
-
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            // 기존 이미지 삭제
+            List<Image> existingImages = board.getImages();
+            for (Image image : existingImages) {
+                String imageUrl = image.getImageUrl();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    s3Uploader.deleteFile(imageUrl); // S3에서 삭제
+                }
+            }
+            board.getImages().clear();
+
+            // 새 이미지 업로드
             List<String> imageUrls = s3Uploader.uploadReviewImages(multipartFiles, "board");
             List<Image> newImages = new ArrayList<>();
             for (String url : imageUrls) {
@@ -287,6 +289,7 @@ public class BoardService {
             }
             board.getImages().addAll(newImages);
         }
+
 
         // 6. 장소 수정 여부 확인: placeName 없으면 유지
         if (request.getPlaceName() != null && !request.getPlaceName().isBlank()) {
