@@ -19,6 +19,7 @@ public class ReviewResultResponse {
     private int likeCount;
     private int scrapCount;
     private String categoryName;
+    private String boardType;
 
     public static ReviewResultResponse from(Board board) {
         List<Image> images = board.getImages();
@@ -46,6 +47,7 @@ public class ReviewResultResponse {
                 .likeCount(board.getLikes())
                 .scrapCount(board.getScraps())
                 .categoryName(board.getCategory().getCategoryName())
+                .boardType(board.getBoardType().toString())
                 .build();
     }
 }
