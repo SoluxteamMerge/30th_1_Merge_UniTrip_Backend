@@ -185,6 +185,7 @@ public class BoardService {
                 .nickname(board.getUser().getNickname())
                 .profileImageUrl(board.getUser().getProfileImageUrl())
                 .createdAt(board.getCreatedAt().toString())
+                .updatedAt(board.getUpdatedAt().toString())
                 .scheduleDate(board.getScheduleDate())
                 .views(board.getViews())
                 .rating(averageRating)
@@ -321,7 +322,7 @@ public class BoardService {
         }
 
         // 8. 수정 시간은 @LastModifiedDate에 의해 자동 갱신됨
-
+        boardRepository.save(board);
         // 9. 응답 반환
         return new BoardResponse(
                 200,
