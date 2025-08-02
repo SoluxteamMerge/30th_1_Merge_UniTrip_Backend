@@ -51,6 +51,7 @@ public class Comment {
         this.postId = postId;
         this.userId = userId;
         this.content = content != null ? content : "";
+        this.createdAt = LocalDateTime.now();
     }
 
     //댓글 수정 메소드
