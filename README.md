@@ -4,6 +4,15 @@
 (여행기/리뷰/추천/동행 등 서비스 기능을 제공하는 REST API 서버)
 
 ---
+## 🎥 시연영상
+
+https://drive.google.com/file/d/1Wb2P_wfWJ3TrMyaFCL6vWDb0QYv3E6jo/view?usp=sharing
+
+## 👩‍💻 프로젝트 링크
+
+https://solux.tistory.com/186
+
+---
 
 ## 🧩 Tech Stack
 
@@ -128,17 +137,29 @@ Authorization: Bearer {ACCESS_TOKEN}
 - Spring Security + JWT Filter 기반 인증 처리
 - 토큰 검증 실패 시 401 Unauthorized 응답 반환
 
-- ## 👩‍💻 Author
 
-### Backend Developer
-- **Role**: Backend
-- **Contributions**:
-  - REST API 전반 설계 및 구현
-  - Spring Security + JWT Filter 기반 인증/인가 구조 설계
-  - 공통 API 응답 포맷 및 전역 예외 처리 구조 구현
-  - AWS S3 연동 및 이미지 업로드 기능 개발
-  - JPA 기반 데이터베이스 설계 및 관리
-  - Swagger(OpenAPI)를 활용한 API 문서화
+<h2>🙌 Contributors</h2>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <b>정은서</b><br/>
+      <img src="https://github.com/eunseo0903.png" width="200"/><br/>
+      <a href="https://github.com/eunseo0903">eunseo0903</a>
+    </td>
+    <td align="center">
+      <b>백다현</b><br/>
+      <img src="https://github.com/dahyeon1216.png" width="200"/><br/>
+      <a href="https://github.com/dahyeon1216">dahyeon1216</a>
+    </td>
+    <td align="center">
+      <b>정유빈</b><br/>
+      <img src="https://github.com/youbing5921.png" width="200"/><br/>
+      <a href="https://github.com/youbing5921">youbing5921</a>
+    </td>
+  </tr>
+</table>
+
 
 ---
 
